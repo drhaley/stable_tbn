@@ -1,0 +1,4 @@
+a:site1 >t1
+a* b*:site2 >t2
+a b
+b b b*

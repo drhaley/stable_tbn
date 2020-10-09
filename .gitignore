@@ -1,0 +1,5 @@
+# no pycache
+__pycache__
+
+# no IDE files
+.idea
