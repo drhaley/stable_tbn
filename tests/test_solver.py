@@ -1,4 +1,6 @@
 import unittest
+from math import inf as infinity
+
 from source.tbn import Tbn
 from source.solver import Solver, SolverMethod
 
@@ -49,6 +51,18 @@ class TestSolver(unittest.TestCase):
             self.assertEqual(2, config.number_of_polymers())
             self.assertEqual(5, config.number_of_merges())
 
+        with self.subTest("check for correctness with infinite monomers", parameter_string=parameter_string):
+            test_tbn = Tbn.from_string("inf[a* b*] \n 2[a b]")
+            config = solver.stable_config(test_tbn)
+            self.assertEqual(infinity, config.number_of_polymers())
+            self.assertEqual(2, config.number_of_merges())
+
+        with self.subTest("second check for correctness with infinite monomers", parameter_string=parameter_string):
+            test_tbn = Tbn.from_string("inf[2(a*) 2(b*)] \n 2[3(a) 3(b)]")
+            config = solver.stable_config(test_tbn)
+            self.assertEqual(infinity, config.number_of_polymers())
+            self.assertEqual(4, config.number_of_merges())
+
     def __run_test_stable_configs_with_specific_solver(self, solver: Solver, parameter_string: str):
         with self.subTest("check for correctness in simple example", parameter_string=parameter_string):
             test_tbn = Tbn.from_string("a* b* \n a b \n a* \n b*")
@@ -69,6 +83,19 @@ class TestSolver(unittest.TestCase):
             self.assertEqual(5, results[0].number_of_merges())
             self.assertEqual(5, results[1].number_of_merges())
             self.assertEqual(5, results[2].number_of_merges())
+
+        with self.subTest("check for correctness with infinite monomers", parameter_string=parameter_string):
+            test_tbn = Tbn.from_string("inf[a* b*] \n 2[a b]")
+            results = list(solver.stable_configs(test_tbn))
+            self.assertEqual(1, len(results))
+            self.assertEqual(2, results[0].number_of_merges())
+
+        with self.subTest("second check for correctness with infinite monomers", parameter_string=parameter_string):
+            test_tbn = Tbn.from_string("inf[2(a*) 2(b*)] \n 2[3(a) 3(b)]")
+            results = list(solver.stable_configs(test_tbn))
+            print([str(x) for x in results])
+            self.assertEqual(2, len(results))
+            self.assertEqual(4, results[0].number_of_merges())
 
     def __run_test_configs_with_number_of_polymers_with_specific_solver(self, solver: Solver, parameter_string: str):
         with self.subTest("check for correctness in simple example", parameter_string=parameter_string):

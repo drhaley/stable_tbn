@@ -1,4 +1,6 @@
 import unittest
+from math import inf as infinity
+
 from source.polymer import Polymer
 from source.monomer import Monomer
 
@@ -18,7 +20,7 @@ class TestPolymer(unittest.TestCase):
             with self.assertRaises(AssertionError):
                 Polymer({})
 
-        for quantity in [0, -1, -2, 'a', '^', float("inf")]:
+        for quantity in [0, -1, -2, 'a', '^', infinity]:
             with self.subTest("Do not allow nonpositive or infinite monomer quantities", quantity=quantity):
                 with self.assertRaises(AssertionError):
                     Polymer({self.x: 2, self.y: quantity})
@@ -53,3 +55,7 @@ class TestPolymer(unittest.TestCase):
         self.assertFalse(self.polymer_1x_1y < self.polymer_2x_3y)
         self.assertFalse(self.polymer_1x < self.polymer_1x_1y)
         self.assertFalse(self.polymer_1y < self.polymer_1x)
+
+    def test_eq(self):
+        self.assertEqual(self.polymer_1x, Polymer({self.x: 1}))
+        self.assertNotEqual(self.polymer_1x, Polymer({self.y: 1}))

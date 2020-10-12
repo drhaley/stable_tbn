@@ -26,6 +26,9 @@ class Polymer:
         monomers_as_string = ", ".join(monomer_strings_as_list)
         return f"{{{monomers_as_string}}}"
 
+    def __hash__(self) -> int:
+        return hash(str(self))
+
     def __lt__(self, other: "Polymer") -> bool:
         all_keys = set(self.__monomer_counts.keys()).union(other.__monomer_counts.keys())
         for monomer in sorted(all_keys):
@@ -35,3 +38,14 @@ class Polymer:
                 return False
         else:
             return False
+
+    def __eq__(self, other: "Polymer") -> bool:
+        all_keys = set(self.__monomer_counts.keys()).union(other.__monomer_counts.keys())
+        for monomer in sorted(all_keys):
+            if self.__monomer_counts.get(monomer, 0) != other.__monomer_counts.get(monomer, 0):
+                return False
+        else:
+            return True
+
+    def items(self):
+        return self.__monomer_counts.items()

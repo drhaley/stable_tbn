@@ -1,0 +1,7 @@
+inf[x00 x01 x02 >H0]
+inf[x10 x11 x12 >H1]
+inf[x20 x21 x22 >H2]
+inf[x00 x10 x20 >V0]
+inf[x01 x11 x21 >V1]
+inf[x02 x12 x22 >V2]
+10[x00* x01* x02* x10* x11* x12* x20* x21* x22* >G]

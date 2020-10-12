@@ -1,4 +1,5 @@
 from typing import TypeVar, Dict, Union, Generic
+from math import inf as infinity
 
 T = TypeVar('T')
 
@@ -10,7 +11,7 @@ class PositiveMultiset(Dict[T, Union[int, float]]):
                 if type(item) is not base_type:
                     raise AssertionError(f"Expected item of type {base_type} and instead got {type(item)}")
                 count = dictionary_of_values[item]
-                if (type(count) is int and count >= 1) or (allow_infinity and count == float("inf")):
+                if (type(count) is int and count >= 1) or (allow_infinity and count == infinity):
                     pass
                 else:
                     raise AssertionError(

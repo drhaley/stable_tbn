@@ -1,4 +1,7 @@
 from typing import Dict, Union
+from math import inf as infinity
+
+from source.tbn import Tbn
 from source.polymer import Polymer
 from source.positive_multiset import PositiveMultiset
 
@@ -17,7 +20,7 @@ class Configuration:
         return \
             sum(
                 self.__polymer_counts[polymer] * (polymer.size() - 1)
-                    for polymer in self.__polymer_counts
+                    for polymer in self.__polymer_counts if polymer.size() > 1
             )
 
     def __str__(self) -> str:
@@ -36,3 +39,11 @@ class Configuration:
                 polymer_strings_as_list.append(polymer_as_string)
         polymers_as_string = "; ".join(polymer_strings_as_list)
         return f"{polymers_as_string}"
+
+    def flatten(self) -> Tbn:
+        monomer_counts = {}
+        for polymer, polymer_count in self.__polymer_counts.items():
+            for monomer, monomer_count in polymer.items():
+                monomer_counts[monomer] = (polymer_count * monomer_count) + monomer_counts.get(monomer, 0)
+        return Tbn(monomer_counts)
+
