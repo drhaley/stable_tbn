@@ -93,7 +93,6 @@ class TestSolver(unittest.TestCase):
         with self.subTest("second check for correctness with infinite monomers", parameter_string=parameter_string):
             test_tbn = Tbn.from_string("inf[2(a*) 2(b*)] \n 2[3(a) 3(b)]")
             results = list(solver.stable_configs(test_tbn))
-            print([str(x) for x in results])
             self.assertEqual(2, len(results))
             self.assertEqual(4, results[0].number_of_merges())
 
