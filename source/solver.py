@@ -157,7 +157,7 @@ class Solver:
             model.Add(indicator_vars[j] <=
                     sum(
                         polymer_composition_vars[i, j]
-                        for i in range(len(ordered_monomer_types))
+                        for i, monomer in enumerate(ordered_monomer_types) if monomer in limiting_monomer_types
                     )
             )
 
