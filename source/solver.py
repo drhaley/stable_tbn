@@ -50,7 +50,14 @@ class Solver:
             raise AssertionError(
                 "cannot request a specific number of polymers when there are an infinite amount of monomers"
             )
-        return self.configs_with_number_of_merges(tbn, number_of_merges=total_number_of_monomers - number_of_polymers)
+        model, ordered_monomer_types, polymer_composition_vars = self.__build_model(
+            tbn, fixed_number_of_polymers=number_of_polymers
+        )
+        solutions = self.__adapter.solve_all(model, polymer_composition_vars.values())
+        return [
+            self.interpret_solution(tbn, ordered_monomer_types, polymer_composition_vars, solution)
+                for solution in solutions
+        ]
 
     def configs_with_number_of_merges(self,
                                       tbn: Tbn,
@@ -68,22 +75,37 @@ class Solver:
 
     def __build_model(self,
                       tbn: Tbn,
+                      fixed_number_of_polymers: Optional[int] = None,
                       fixed_number_of_merges: Optional[int] = None,
                       non_singleton_polymer_estimate: Optional[int] = None,
                       ) -> Tuple[adapter.Model, List[Monomer], Dict[Tuple[int, int], Any]]:
         """
         :param tbn:
         :param fixed_number_of_polymers:
-        if a number of polymers is fixed, can supply all the configurations with this number of polymers,
-         otherwise supplies a single configuration with the largest number of polymers possible (i.e. fewest merges)
+        if a number of polymers is fixed, supplies all the configurations with this number of polymers
+         (this also sets "fixed_number_of_merges" accordingly)
+        :param fixed_number_of_merges:
+        if a number of merges is fixed, can supply all the configurations with this number of merges,
+         otherwise supplies a single configuration with the fewest number of polymers possible
         :return:
             (model, ordered_monomer_list, polymer_inclusion_matrix_entry_dict)
         """
+
         model = self.__adapter.model()
 
-        limiting_monomer_types = list(tbn.limiting_monomer_types())
         ordered_monomer_types = list(tbn.monomer_types())
         limiting_domain_types = list(tbn.limiting_domain_types())
+
+        if fixed_number_of_polymers is None:
+            limiting_monomer_types = list(tbn.limiting_monomer_types())
+        else:
+            total_number_of_monomers = sum(
+                tbn.count(monomer_type)
+                for monomer_type in ordered_monomer_types
+            )
+            fixed_number_of_merges = total_number_of_monomers - fixed_number_of_polymers
+            non_singleton_polymer_estimate = fixed_number_of_polymers
+            limiting_monomer_types = ordered_monomer_types  # must account for all monomers if polymer count is fixed
 
         total_number_of_limiting_monomers = sum(
             tbn.count(monomer_type)
