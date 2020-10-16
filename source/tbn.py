@@ -76,9 +76,16 @@ class Tbn:
 
         return Tbn(monomer_counts)
 
-    def monomer_types(self) -> Iterator[Monomer]:
+    def monomer_types(self, flatten:bool = False) -> Iterator[Monomer]:
         for monomer in sorted(self.__monomer_counts):
-            yield monomer
+            if flatten:
+                if self.count(monomer) == infinity:
+                    raise AssertionError("cannot flatten a tbn with infinite quantities of monomers")
+                else:
+                    for _ in range(self.count(monomer)):
+                        yield monomer
+            else:
+                yield monomer
 
     def limiting_domain_types(self) -> Iterator[Domain]:
         domain_tally = {}

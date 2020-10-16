@@ -4,10 +4,11 @@ from math import inf as infinity
 from source.tbn import Tbn
 from source.solver import Solver, SolverMethod, SolverFormulation
 
-MultisetFormulation = {x for x in SolverFormulation
+SetFormulation = {x for x in SolverFormulation
                             if x not in
-                            {SolverFormulation.STABLE_GEN_FORMULATION, SolverFormulation.BOND_OBLIVIOUS_FORMULATION}
+                            {SolverFormulation.STABLEGEN_FORMULATION, SolverFormulation.BOND_OBLIVIOUS_FORMULATION}
                         }
+MultisetFormulation = SetFormulation.difference({SolverFormulation.SET_FORMULATION})
 InfinityFormulation = {SolverFormulation.BEYOND_MULTISET_FORMULATION}
 
 
@@ -109,17 +110,42 @@ class TestSolver(unittest.TestCase):
                 self.assertEqual(4, results[0].number_of_merges())
 
     def __run_test_configs_with_number_of_polymers_with_specific_solver(self, solver: Solver, parameter_string: str):
-        for formulation in set(SolverFormulation).difference(InfinityFormulation):
+        for formulation in set(SolverFormulation).difference(SetFormulation):  #solvers that cannot cap maximum number_of_polymers
+            with self.subTest("check on very simple example", parameter_string=parameter_string, formulation=formulation):
+                test_tbn = Tbn.from_string("a b* \n b c* \n c \n d")
+                results = {
+                    i: set(solver.configs_with_number_of_polymers(test_tbn, number_of_polymers=i, formulation=formulation))
+                        for i in range(1, 5)
+                }
+                expected_number_of_configurations = {1: 2, 2: 1, 3: 0, 4: 0}  # numbers by regression testing
+                for i in expected_number_of_configurations.keys():
+                    self.assertEqual(expected_number_of_configurations[i], len(results[i]))
+
+        for formulation in MultisetFormulation.difference(InfinityFormulation):
             with self.subTest("check for correctness in simple example", parameter_string=parameter_string, formulation=formulation):
                 test_tbn = Tbn.from_string("a* b* \n a b \n a* \n b*")
                 results = {
-                    i: list(solver.configs_with_number_of_polymers(test_tbn, number_of_polymers=i, formulation=formulation))
+                    i: solver.configs_with_number_of_polymers(test_tbn, number_of_polymers=i, formulation=formulation)
                         for i in range(1, 5)
                 }
                 expected_number_of_configurations = {1: 1, 2: 4, 3: 1, 4: 0}
                 for i in expected_number_of_configurations.keys():
                     self.assertEqual(expected_number_of_configurations[i], len(results[i]))
-        for formulation in MultisetFormulation.difference(InfinityFormulation):
+
+        for formulation in SetFormulation.difference(MultisetFormulation):  # solvers that produce combinatorial duplicates
+            with self.subTest("check on very simple example", parameter_string=parameter_string,
+                              formulation=formulation):
+                test_tbn = Tbn.from_string("2[a* b*] \n a b")
+                results = {
+                    i: solver.configs_with_number_of_polymers(test_tbn, number_of_polymers=i,
+                                                                  formulation=formulation)
+                    for i in range(1, 4)
+                }
+                expected_number_of_configurations = {1: 1, 2: 2, 3: 0}  # numbers by regression testing
+                for i in expected_number_of_configurations.keys():
+                    self.assertEqual(expected_number_of_configurations[i], len(results[i]))
+
+        for formulation in MultisetFormulation.difference(SetFormulation):  # solvers that do not produce combinatorial duplicates
             with self.subTest("check for no combinatorial duplicates", parameter_string=parameter_string, formulation=formulation):
                 test_tbn = Tbn.from_string("2[a* b*] \n a b")
                 results = {

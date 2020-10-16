@@ -65,6 +65,18 @@ class TestConfiguration(unittest.TestCase):
             intended_output = "3{2(X), 3(Y)}; inf{X, Y}"
             self.assertEqual(intended_output, str(inf_test_configuration))
 
+    def test_eq(self):
+        test_configurations = []
+        for i in range(2):
+            test_configurations.append(
+                Configuration({self.polymer_1y: 1, self.polymer_1x_1y: 2, self.polymer_2x_3y: 3, self.polymer_1x: 4})
+            )
+        self.assertEqual(test_configurations[0], test_configurations[0])
+        self.assertEqual(test_configurations[1], test_configurations[1])
+        self.assertEqual(test_configurations[0], test_configurations[1])
+        self.assertNotEqual(test_configurations[0], Configuration({}))
+        self.assertNotEqual(Configuration({}), test_configurations[0])
+
     def test_size(self):
         test_polymers = [
             self.polymer_1x,

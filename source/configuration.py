@@ -40,6 +40,12 @@ class Configuration:
         polymers_as_string = "; ".join(polymer_strings_as_list)
         return f"{polymers_as_string}"
 
+    def __hash__(self) -> int:
+        return hash(self.full_str())
+
+    def __eq__(self, other: "Configuration") -> bool:
+        return self.full_str() == other.full_str()
+
     def flatten(self) -> Tbn:
         monomer_counts = {}
         for polymer, polymer_count in self.__polymer_counts.items():

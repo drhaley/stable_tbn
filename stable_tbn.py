@@ -1,6 +1,6 @@
 import argparse
 import timeit
-from source.solver import SolverMethod
+from source.solver import SolverMethod, SolverFormulation
 from source import lib
 
 
@@ -9,11 +9,14 @@ def main() -> None:
 
     tic = timeit.default_timer()
 
+    formulation = SolverFormulation.BEYOND_MULTISET_FORMULATION  # TODO: create command-line arguments to choose
+
     if not args.single:
         stable_configurations = lib.get_stable_configs(
             tbn_filename=args.tbn_filename,
             constraint_filename=args.constraint_filename,
             solver_method=SolverMethod.INTEGER_PROGRAMMING if args.ip else SolverMethod.CONSTRAINT_PROGRAMMING,
+            formulation=formulation,
         )
 
         toc = timeit.default_timer()
@@ -24,6 +27,7 @@ def main() -> None:
             tbn_filename=args.tbn_filename,
             constraint_filename=args.constraint_filename,
             solver_method=SolverMethod.INTEGER_PROGRAMMING if args.ip else SolverMethod.CONSTRAINT_PROGRAMMING,
+            formulation=formulation,
         )
 
         toc = timeit.default_timer()

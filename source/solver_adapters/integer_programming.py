@@ -1,4 +1,4 @@
-from typing import Any, Iterator, Dict, List
+from typing import Any, Iterator, Dict, List, Union
 from ortools.linear_solver import pywraplp
 from source.solver_adapters import abstract
 
@@ -109,8 +109,11 @@ class Solver(abstract.SolverAdapter):
         status = model.Solve()
         return status
 
-    def value(self, var: pywraplp.Variable) -> int:
-        return int(var.solution_value())
+    def value(self, var: Union[int, pywraplp.Variable]) -> int:
+        if isinstance(var, int):
+            return var
+        else:
+            return int(var.solution_value())
 
     def solve_all(self, model: abstract.Model, variables_with_values_to_keep: List[Any]) -> Iterator[Dict[Any, int]]:
         raise NotImplementedError("Not implemented to query the complete solution set using IP")

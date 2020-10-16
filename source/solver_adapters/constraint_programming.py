@@ -1,4 +1,4 @@
-from typing import Any, List, Iterator, Dict
+from typing import Any, List, Iterator, Dict, Union
 from ortools.sat.python import cp_model
 from source.solver_adapters import abstract
 
@@ -28,15 +28,14 @@ class CpModel(abstract.Model, cp_model.CpModel):
             )
         else:
             consequent = args[-1]
-            antecedents = args[:-1]
+            antecedents = list(args[:-1])
 
         if type(consequent) is not cp_model.BoundedLinearExpression:
             constraint = self.Add(consequent != int(False))
         else:
             constraint = self.Add(consequent)
 
-        for antecedent in antecedents:
-            constraint = constraint.OnlyEnforceIf(antecedent)
+        constraint = constraint.OnlyEnforceIf(antecedents)
 
         return constraint
 
@@ -61,8 +60,11 @@ class Solver(abstract.SolverAdapter):
         status = self.__internal_solver.Solve(model)
         return status
 
-    def value(self, var: cp_model.IntVar) -> int:
-        return self.__internal_solver.Value(var)
+    def value(self, var: Union[int, cp_model.IntVar]) -> int:
+        if isinstance(var, int):
+            return var
+        else:
+            return self.__internal_solver.Value(var)
 
     def solve_all(self, model: CpModel, variables_with_values_to_keep) -> Iterator[Dict[Any, int]]:
         internal_solver = cp_model.CpSolver()

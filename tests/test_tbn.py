@@ -133,7 +133,22 @@ class TestTbn(unittest.TestCase):
             ({self.x: infinity, self.y: infinity}, [self.x, self.y]),
         ]
         for monomer_multiset, monomer_types in tests:
-            self.assertEqual(monomer_types, list(Tbn(monomer_multiset).monomer_types()))
+            tbn = Tbn(monomer_multiset)
+            with self.subTest("ordinary monomer type iterator", tbn=tbn):
+                self.assertEqual(monomer_types, list(tbn.monomer_types()))
+        flatten_tests = [
+            ({}, []),
+            ({self.x: 3}, [self.x]),
+            ({self.y: 5}, [self.y]),
+            ({self.x: 5, self.y: 2}, [self.x, self.y]),
+        ]
+        for monomer_multiset, monomer_types in flatten_tests:
+            tbn = Tbn(monomer_multiset)
+            with self.subTest("monomer type iterator with flatten", tbn=tbn):
+                flattened_list = list(tbn.monomer_types(flatten=True))
+                for monomer_type in monomer_types:
+                    self.assertEqual(tbn.count(monomer_type), flattened_list.count(monomer_type))
+
 
     def test_limiting_domain_types(self):
         tests = [
