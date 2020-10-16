@@ -1,6 +1,6 @@
 import unittest
 import tempfile
-from source.lib import get_stable_configs
+from source import lib
 
 class TestLib(unittest.TestCase):
     def setUp(self):
@@ -12,8 +12,15 @@ class TestLib(unittest.TestCase):
         self.tbn_file.close()
 
     def test_get_stable_configs(self):
-        configurations = list(get_stable_configs(self.tbn_filename))
+        configurations = list(lib.get_stable_configs(self.tbn_filename))
         self.assertEqual(3, len(configurations))  # (6 + 3 - 5 - 4), (6 - 1 - 5), (6 - 2 - 4)
         self.assertEqual(2, configurations[0].number_of_polymers())
         self.assertEqual(2, configurations[1].number_of_polymers())
         self.assertEqual(2, configurations[2].number_of_polymers())
+
+    def test_get_tbn_from_filename(self):
+        with self.subTest("opens a valid filename"):
+            lib.get_tbn_from_filename(self.tbn_filename)
+        with self.subTest("does not open an invalid filename"):
+            with self.assertRaises(FileNotFoundError):
+                lib.get_tbn_from_filename("THERE_IS_NO_FILE_BY_THIS_NAME.txt")

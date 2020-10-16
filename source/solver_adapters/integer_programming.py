@@ -105,12 +105,12 @@ class Solver(abstract.SolverAdapter):
     def model() -> abstract.Model:
         return IpModel()
 
-    def solve(self, model: IpModel, variables_with_values_to_keep: List[Any]) -> Any:
+    def solve(self, model: abstract.Model, variables_with_values_to_keep: List[Any]) -> Any:
         status = model.Solve()
         return status
 
     def value(self, var: pywraplp.Variable) -> int:
         return int(var.solution_value())
 
-    def solve_all(self, model: IpModel, variables_with_values_to_keep: List[Any]) -> Iterator[Dict[Any, int]]:
+    def solve_all(self, model: abstract.Model, variables_with_values_to_keep: List[Any]) -> Iterator[Dict[Any, int]]:
         raise NotImplementedError("Not implemented to query the complete solution set using IP")

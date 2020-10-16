@@ -9,6 +9,7 @@ class CpModel(abstract.Model, cp_model.CpModel):
         cp_model.CpModel.__init__(self)
         abstract.Model.__init__(self)
         self.OPTIMAL = cp_model.OPTIMAL
+        self.INFEASIBLE = cp_model.INFEASIBLE
 
     def int_var(self, *args, **kargs) -> cp_model.IntVar:
         return self.NewIntVar(*args, **kargs)
