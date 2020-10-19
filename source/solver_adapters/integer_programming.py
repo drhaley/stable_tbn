@@ -7,7 +7,7 @@ class IpModel(abstract.Model, pywraplp.Solver):
     def __init__(self):
         # calling superclasses explicitly here because of multiple inheritance
         abstract.Model.__init__(self)
-        pywraplp.Solver.__init__(self, "stable_tbn-ip-model", pywraplp.Solver.CBC_MIXED_INTEGER_PROGRAMMING)
+        pywraplp.Solver.__init__(self, "stable_tbn-ip-model", pywraplp.Solver.SCIP_MIXED_INTEGER_PROGRAMMING)
         self.__id_counter = 0
 
     def __get_id(self) -> int:
@@ -105,7 +105,9 @@ class Solver(abstract.SolverAdapter):
     def model() -> abstract.Model:
         return IpModel()
 
-    def solve(self, model: abstract.Model, variables_with_values_to_keep: List[Any]) -> Any:
+    def solve(self, model: abstract.Model, variables_with_values_to_keep: List[Any], verbose: bool = False) -> Any:
+        if verbose:
+            model.EnableOutput()
         status = model.Solve()
         return status
 

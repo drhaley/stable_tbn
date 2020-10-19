@@ -55,8 +55,10 @@ class Solver(abstract.SolverAdapter):
     def model() -> abstract.Model:
         return CpModel()
 
-    def solve(self, model: CpModel, variables_with_values_to_keep: List[Any]) -> Any:
+    def solve(self, model: CpModel, variables_with_values_to_keep: List[Any], verbose: bool = False) -> Any:
         self.__internal_solver = cp_model.CpSolver()
+        if verbose:
+            self.__internal_solver.parameters.log_search_progress = True
         status = self.__internal_solver.Solve(model)
         return status
 

@@ -112,6 +112,22 @@ class TestConfiguration(unittest.TestCase):
         self.assertEqual(1, Configuration({self.polymer_1x_1y: 1, self.polymer_1y: infinity}).number_of_merges())
         self.assertEqual(infinity, Configuration({self.polymer_1x_1y: infinity, self.polymer_1y: 1}).number_of_merges())
 
+    def test_energy(self):
+        # values determined by regression testing
+        monomer_A = Monomer.from_string("a a b b c d")
+        monomer_B = Monomer.from_string("a* b* c*")
+        polymer_A = Polymer({monomer_A: 1})
+        polymer_B = Polymer({monomer_B: 1})
+        polymer_AB = Polymer({monomer_A: 1, monomer_B: 1})
+        polymer_AAB = Polymer({monomer_A: 2, monomer_B: 1})
+        polymer_ABB = Polymer({monomer_A: 1, monomer_B: 2})
+        self.assertEqual(0.0, Configuration({}).energy(bond_weighting_factor=0.4))
+        self.assertEqual(1.0, Configuration({polymer_A: 1, polymer_AB: 1}).energy(bond_weighting_factor=0.4))
+        self.assertEqual(2.2, Configuration({polymer_A: infinity, polymer_B: 1, polymer_AB: 1}).energy(bond_weighting_factor=0.4))
+        self.assertEqual(1.8, Configuration({polymer_B: infinity, polymer_AB: 1}).energy(bond_weighting_factor=0.4))
+        self.assertEqual(4.8, Configuration({polymer_B: infinity, polymer_AAB: 1}).energy(bond_weighting_factor=0.4))
+        self.assertEqual(2.4, Configuration({polymer_A: infinity, polymer_ABB: 1}).energy(bond_weighting_factor=0.4))
+
     def test_flatten(self):
         self.assertEqual(
             Tbn({}),

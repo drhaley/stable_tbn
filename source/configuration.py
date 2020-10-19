@@ -53,3 +53,18 @@ class Configuration:
                 monomer_counts[monomer] = (polymer_count * monomer_count) + monomer_counts.get(monomer, 0)
         return Tbn(monomer_counts)
 
+    def energy(self, bond_weighting_factor: float) -> float:
+        if bond_weighting_factor <= 0.0:
+            raise AssertionError("For low-W formulation, must supply positive bond weighting factor.")
+        limiting_domain_types = self.flatten().limiting_domain_types()
+        bond_deficit = 0
+        for limiting_domain_type in limiting_domain_types:
+            for polymer, polymer_count in self.__polymer_counts.items():
+                local_deficit = sum(
+                    monomer.net_count(limiting_domain_type) * monomer_count
+                        for monomer, monomer_count in polymer.items()
+                )
+                if local_deficit > 0:
+                    bond_deficit += local_deficit
+
+        return round(bond_weighting_factor * bond_deficit + self.number_of_merges(), 8)

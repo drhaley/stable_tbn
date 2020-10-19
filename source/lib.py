@@ -10,12 +10,13 @@ def get_stable_configs(
         constraint_filename: Optional[str] = None,
         solver_method: SolverMethod = SolverMethod.CONSTRAINT_PROGRAMMING,
         formulation: SolverFormulation = SolverFormulation.BEYOND_MULTISET_FORMULATION,
+        bond_weighting_factor: Optional[float] = None,
     ) -> Iterator[Configuration]:
 
     tbn = get_tbn_from_filename(tbn_filename)
     _ = get_constraints_from_filename(constraint_filename)
     solver = Solver(method=solver_method)
-    stable_configurations = solver.stable_configs(tbn, formulation=formulation)
+    stable_configurations = solver.stable_configs(tbn, formulation=formulation, bond_weighting_factor=bond_weighting_factor)
 
     return stable_configurations
 
@@ -25,12 +26,13 @@ def get_stable_config(
         constraint_filename: Optional[str] = None,
         solver_method: SolverMethod = SolverMethod.CONSTRAINT_PROGRAMMING,
         formulation: SolverFormulation = SolverFormulation.BEYOND_MULTISET_FORMULATION,
+        bond_weighting_factor: Optional[float] = None,
     ) -> Configuration:
 
     tbn = get_tbn_from_filename(tbn_filename)
     _ = get_constraints_from_filename(constraint_filename)
     solver = Solver(method=solver_method)
-    stable_configuration = solver.stable_config(tbn, formulation=formulation)
+    stable_configuration = solver.stable_config(tbn, formulation=formulation, bond_weighting_factor=bond_weighting_factor)
 
     return stable_configuration
 
