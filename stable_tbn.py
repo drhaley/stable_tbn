@@ -9,7 +9,12 @@ def main() -> None:
 
     tic = timeit.default_timer()
 
-    formulation = SolverFormulation.BEYOND_MULTISET_FORMULATION  # TODO: create command-line arguments to choose
+    if args.weight is None:
+        formulation = SolverFormulation.BEYOND_MULTISET_FORMULATION  # TODO: create command-line arguments to choose
+        bond_weighting_factor = None
+    else:
+        formulation = SolverFormulation.LOW_W_FORMULATION
+        bond_weighting_factor = float(args.weight)
 
     if not args.single:
         stable_configurations = lib.get_stable_configs(
@@ -17,21 +22,25 @@ def main() -> None:
             constraint_filename=args.constraint_filename,
             solver_method=SolverMethod.INTEGER_PROGRAMMING if args.ip else SolverMethod.CONSTRAINT_PROGRAMMING,
             formulation=formulation,
+            bond_weighting_factor=bond_weighting_factor,
         )
 
         toc = timeit.default_timer()
         for i, configuration in enumerate(stable_configurations):
-            print(f"Configuration {i+1}:\n{configuration}")
+            configuration_string = configuration.full_str() if args.full else str(configuration)
+            print(f"Configuration {i+1}:\n{configuration_string}")
     else:
         stable_configuration = lib.get_stable_config(
             tbn_filename=args.tbn_filename,
             constraint_filename=args.constraint_filename,
             solver_method=SolverMethod.INTEGER_PROGRAMMING if args.ip else SolverMethod.CONSTRAINT_PROGRAMMING,
             formulation=formulation,
+            bond_weighting_factor=bond_weighting_factor,
         )
 
         toc = timeit.default_timer()
-        print(stable_configuration)
+        configuration_string = stable_configuration.full_str() if args.full else str(stable_configuration)
+        print(f"Configuration: {configuration_string}")
 
     if args.timed:
         print(f"seconds elapsed: {toc-tic}")
@@ -40,22 +49,22 @@ def main() -> None:
 def get_command_line_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument(
-            "tbn_filename",
-            metavar="tbn_filename",
-            type=str,
-            help="filename for tbn text file",
+        "tbn_filename",
+        metavar="tbn_filename",
+        type=str,
+        help="filename for tbn text file",
     )
     parser.add_argument(
-            '-i',
-            "--ip",
-            action="store_true",
-            help="use the integer programming formulation (instead of constraint programming)",
+        '-i',
+        "--ip",
+        action="store_true",
+        help="use the integer programming formulation (instead of constraint programming)",
     )
     parser.add_argument(
-            '-1',
-            dest="single",
-            action="store_true",
-            help="only report one stable configuration",
+        '-1',
+        dest="single",
+        action="store_true",
+        help="only report one stable configuration",
     )
     parser.add_argument(
         "-t",
@@ -64,11 +73,23 @@ def get_command_line_arguments() -> argparse.Namespace:
         help="print elapsed time",
     )
     parser.add_argument(
-            "-c",
-            dest="constraint_filename",
-            metavar="constraint_filename",
-            type=str,
-            help="filename for constraint text file",
+        "-f",
+        "--full",
+        action="store_true",
+        help="print full configuration, including singletons",
+    )
+    parser.add_argument(
+        "-w",
+        "--weight",
+        type=str,
+        help="energy weight/worth of bonds vs polymers formed, e.g. 0.5",
+    )
+    parser.add_argument(
+        "-c",
+        dest="constraint_filename",
+        metavar="constraint_filename",
+        type=str,
+        help="filename for constraint text file",
     )
 
     return parser.parse_args()

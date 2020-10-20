@@ -3,6 +3,7 @@ import itertools
 from typing import Iterator, Optional, Tuple, List, Dict, Any
 from enum import Enum, auto
 from math import inf as infinity
+from math import ceil
 
 from source.tbn import Tbn
 from source.configuration import Configuration
@@ -67,7 +68,7 @@ class Solver:
         )
         if formulation == SolverFormulation.LOW_W_FORMULATION:
             max_energy = example_stable_configuration.energy(bond_weighting_factor)
-            return self.configs_with_energy(tbn, formulation=formulation, max_energy=max_energy)
+            return self.configs_with_energy(tbn, formulation=formulation, max_energy=max_energy, bond_weighting_factor=bond_weighting_factor)
         elif formulation == SolverFormulation.BEYOND_MULTISET_FORMULATION:
             number_of_merges = example_stable_configuration.number_of_merges()
             return self.configs_with_number_of_merges(tbn, formulation=formulation, number_of_merges=number_of_merges)
@@ -340,7 +341,7 @@ class Solver:
             if optimize:
                 model.Minimize(energy)
             else:
-                model.Add(energy <= SCALING_FACTOR * max_energy)
+                model.Add(energy <= ceil(SCALING_FACTOR * max_energy))
         elif formulation == SolverFormulation.BEYOND_MULTISET_FORMULATION:
             if optimize:
                 model.Minimize(number_of_merges)
