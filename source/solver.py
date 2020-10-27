@@ -197,7 +197,7 @@ class Solver:
 
         if formulation == SolverFormulation.SET_FORMULATION:
             ordered_monomer_types = list(tbn.monomer_types(flatten=True))
-            monomer_counts = [1 for monomer in ordered_monomer_types]
+            monomer_counts = [1 for _ in ordered_monomer_types]
         else:
             ordered_monomer_types = list(tbn.monomer_types())
             monomer_counts = [tbn.count(monomer) for monomer in ordered_monomer_types]
@@ -505,7 +505,7 @@ class Solver:
             for i, monomer in enumerate(ordered_monomer_types):
                 monomer_count = value_dict[polymer_composition_vars[i, j]]
                 if monomer_count > 0:
-                    this_polymer_dict[monomer] = monomer_count
+                    this_polymer_dict[monomer] = monomer_count + this_polymer_dict.get(monomer, 0)
             if this_polymer_dict:  # not an empty polymer
                 this_polymer = Polymer(this_polymer_dict)
                 this_configuration_dict[this_polymer] = 1 + this_configuration_dict.get(this_polymer, 0)
