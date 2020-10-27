@@ -74,12 +74,13 @@ class Solver:
             return self.configs_with_number_of_merges(tbn, formulation=formulation, number_of_merges=number_of_merges)
         else:
             number_of_polymers = example_stable_configuration.number_of_polymers()
-            return self.configs_with_number_of_polymers(tbn, formulation=formulation, number_of_polymers=number_of_polymers)
+            return self.configs_with_number_of_polymers(tbn, formulation=formulation, number_of_polymers=number_of_polymers, bond_weighting_factor=bond_weighting_factor)
 
     def configs_with_number_of_polymers(self,
                                         tbn: Tbn,
                                         formulation: SolverFormulation,
                                         number_of_polymers: Optional[int] = None,
+                                        bond_weighting_factor: float = None,
                                         ) -> Iterator[Configuration]:
         total_number_of_monomers = sum(
             tbn.count(monomer_type)
@@ -90,7 +91,7 @@ class Solver:
                 "cannot request a specific number of polymers when there are an infinite amount of monomers"
             )
         model, ordered_monomer_types, polymer_composition_vars = self.__build_model(
-            tbn, formulation=formulation, a_priori_number_of_polymers=number_of_polymers
+            tbn, formulation=formulation, a_priori_number_of_polymers=number_of_polymers, bond_weighting_factor=bond_weighting_factor,
         )
         solutions = self.__adapter.solve_all(model, list(polymer_composition_vars.values()))
         return [
