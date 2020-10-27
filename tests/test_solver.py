@@ -49,7 +49,7 @@ class TestSolver(unittest.TestCase):
 
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.STABLEGEN_FORMULATION),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.SET_FORMULATION)
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.SET_FORMULATION),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.MULTISET_FORMULATION),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.LOW_W_FORMULATION),
