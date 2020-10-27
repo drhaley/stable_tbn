@@ -60,7 +60,7 @@ class Configuration:
         bond_deficit = 0
         for limiting_domain_type in limiting_domain_types:
             for polymer, polymer_count in self.__polymer_counts.items():
-                local_deficit = sum(
+                local_deficit = polymer_count * sum(
                     monomer.net_count(limiting_domain_type) * monomer_count
                         for monomer, monomer_count in polymer.items()
                 )

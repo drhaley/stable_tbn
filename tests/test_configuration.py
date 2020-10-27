@@ -128,6 +128,14 @@ class TestConfiguration(unittest.TestCase):
         self.assertEqual(4.8, Configuration({polymer_B: infinity, polymer_AAB: 1}).energy(bond_weighting_factor=0.4))
         self.assertEqual(2.4, Configuration({polymer_A: infinity, polymer_ABB: 1}).energy(bond_weighting_factor=0.4))
 
+        # case to test a fix to a bug in a specific example in which energy was misreported as 0.8 (should be 1.6)
+        #  two limiting monomers with two domains each, all as singletons => 0.4(4 domains) = 1.6
+        monomer_X = Monomer.from_string("a b")
+        monomer_Y = Monomer.from_string("a* b*")
+        polymer_X = Polymer({monomer_X: 1})
+        polymer_Y = Polymer({monomer_Y: 1})
+        self.assertEqual(1.6, Configuration({polymer_X: 2, polymer_Y: infinity}).energy(bond_weighting_factor=0.4))
+
     def test_flatten(self):
         self.assertEqual(
             Tbn({}),
