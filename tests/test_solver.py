@@ -156,11 +156,11 @@ class TestSolver(unittest.TestCase):
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 1, 3.6, self.cp_solver, 0.4),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 1, 4.2, self.cp_solver, 0.6),
 
-            ("inf[a* b*] \n 2[a b]", 1, 0, self.cp_solver, 0.4),
-            ("inf[a* b*] \n 2[a b]", 1, 2, self.cp_solver, 0.6),
+            ("inf[a* b*] \n 2[a b]", 1, 1.6, self.cp_solver, 0.4),
+            ("inf[a* b*] \n 2[a b]", 1, 2.0, self.cp_solver, 0.6),
 
-            ("inf[2(a*) 2(b*)] \n 2[3(a) 3(b)]", 1, 2, self.cp_solver, 0.4),
-            ("inf[2(a*) 2(b*)] \n 2[3(a) 3(b)]", 2, 4, self.cp_solver, 0.6),
+            ("inf[2(a*) 2(b*)] \n 2[3(a) 3(b)]", 1, 3.6, self.cp_solver, 0.4),
+            ("inf[2(a*) 2(b*)] \n 2[3(a) 3(b)]", 2, 4.0, self.cp_solver, 0.6),
         ]
 
         for tbn_string, number_of_configs, energy, solver, weight in low_w_test_cases:
