@@ -3,6 +3,13 @@ import timeit
 from source.solver import SolverMethod, SolverFormulation
 from source import lib
 
+alternate_formulations = [
+    "STABLEGEN_FORMULATION",
+    "BOND_OBLIVIOUS_FORMULATION",
+    "SET_FORMULATION",
+    "MULTISET_FORMULATION",
+]
+
 
 def main() -> None:
     args = get_command_line_arguments()
@@ -10,9 +17,19 @@ def main() -> None:
     tic = timeit.default_timer()
 
     if args.weight is None:
-        formulation = SolverFormulation.BEYOND_MULTISET_FORMULATION  # TODO: create command-line arguments to choose
+        if args.formulation is not None:
+            for formulation_as_string, formulation_as_enum in SolverFormulation.__members__.items():
+                if formulation_as_string == args.formulation:
+                    formulation = formulation_as_enum
+                    break
+            else:
+                raise AssertionError(f"Did not recognize alternate formulation method requested '{args.formulation}'")
+        else:
+            formulation = SolverFormulation.BEYOND_MULTISET_FORMULATION
         bond_weighting_factor = None
     else:
+        if args.method is not None:
+            print("alternate method requested but bond weight was specified, falling back to LOW_W_FORMULATION")
         formulation = SolverFormulation.LOW_W_FORMULATION
         bond_weighting_factor = float(args.weight)
 
@@ -81,6 +98,7 @@ def get_command_line_arguments() -> argparse.Namespace:
     parser.add_argument(
         "-w",
         "--weight",
+        metavar="bond_weight",
         type=str,
         help="energy weight/worth of bonds vs polymers formed, e.g. 0.5",
     )
@@ -91,7 +109,11 @@ def get_command_line_arguments() -> argparse.Namespace:
         type=str,
         help="filename for constraint text file",
     )
-
+    parser.add_argument(
+        "--formulation",
+        type=str,
+        help=f"specify an alternate solution formulation, one of:\n{', '.join(alternate_formulations)}",
+    )
     return parser.parse_args()
 
 
