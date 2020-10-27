@@ -182,28 +182,16 @@ class TestSolver(unittest.TestCase):
             ("a* b* \n a b \n a* \n b*", [12, 7, 1, 0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
             ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.SET_FORMULATION),
             ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.MULTISET_FORMULATION),
-            ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
-            ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.LOW_W_FORMULATION),
 
             #("2[a* b*] \n a b", [ 5, 2, 0, 0], self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),  # TODO: re-enable when implemented
             ("2[a* b*] \n a b", [ 5, 2, 0, 0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
             ("2[a* b*] \n a b", [ 1, 2, 0, 0], self.cp_solver, SolverFormulation.SET_FORMULATION),
             ("2[a* b*] \n a b", [ 1, 1, 0, 0], self.cp_solver, SolverFormulation.MULTISET_FORMULATION),
-            ("2[a* b*] \n a b", [ 1, 1, 0, 0], self.cp_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
-            ("2[a* b*] \n a b", [ 1, 1, 0, 0], self.cp_solver, SolverFormulation.LOW_W_FORMULATION),
 
             #("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [9,4,0,0], self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),  # TODO: re-enable when implemented
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [9,4,0,0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [1,4,0,0], self.cp_solver, SolverFormulation.SET_FORMULATION),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [1,3,0,0], self.cp_solver, SolverFormulation.MULTISET_FORMULATION),
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [1,3,0,0], self.cp_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [1,3,0,0], self.cp_solver, SolverFormulation.LOW_W_FORMULATION),
-
-            ("inf[a* b*] \n 2[a b]", [1,1,0,0], self.cp_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
-            ("inf[a* b*] \n 2[a b]", [1,1,0,0], self.cp_solver, SolverFormulation.LOW_W_FORMULATION),
-
-            ("inf[2(a*) 2(b*)] \n 2[3(a) 3(b)]", [1,1,0,0], self.cp_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
-            ("inf[2(a*) 2(b*)] \n 2[3(a) 3(b)]", [1,1,0,0], self.cp_solver, SolverFormulation.LOW_W_FORMULATION),
         ]
         for tbn_string, number_of_configs_with_polymer_count, solver, formulation in test_cases:
             with self.subTest(tbn_string=tbn_string, solver=solver, formulation=formulation):
@@ -211,6 +199,5 @@ class TestSolver(unittest.TestCase):
                 for polymer_count_minus_one, number_of_configs in enumerate(number_of_configs_with_polymer_count):
                     polymer_count = polymer_count_minus_one + 1
                     configurations = solver.configs_with_number_of_polymers(test_tbn, number_of_polymers=polymer_count,
-                                                                            formulation=formulation,
-                                                                            bond_weighting_factor=2.0)
+                                                                            formulation=formulation)
                     self.assertEqual(number_of_configs, len(configurations))
