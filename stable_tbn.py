@@ -4,10 +4,10 @@ from source.solver import SolverMethod, SolverFormulation
 from source import lib
 
 alternate_formulations = [
-    "STABLEGEN_FORMULATION",
-    "BOND_OBLIVIOUS_FORMULATION",
-    "SET_FORMULATION",
-    "MULTISET_FORMULATION",
+    "STABLEGEN",
+    "BOND_OBLIVIOUS",
+    "SET",
+    "MULTISET",
 ]
 
 
@@ -19,7 +19,8 @@ def main() -> None:
     if args.weight is None:
         if args.formulation is not None:
             for formulation_as_string, formulation_as_enum in SolverFormulation.__members__.items():
-                if formulation_as_string == args.formulation:
+                if formulation_as_string == args.formulation + "_FORMULATION" or \
+                        formulation_as_string == args.formulation:
                     formulation = formulation_as_enum
                     break
             else:
