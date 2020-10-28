@@ -19,7 +19,7 @@ class SolverMethod(Enum):
 
 
 class SolverFormulation(Enum):
-    STABLEGEN_FORMULATION = auto()  # TODO: NYI
+    STABLEGEN_FORMULATION = auto()
     BOND_OBLIVIOUS_FORMULATION = auto()
     SET_FORMULATION = auto()
     MULTISET_FORMULATION = auto()
