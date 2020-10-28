@@ -117,5 +117,5 @@ class Solver(abstract.SolverAdapter):
         else:
             return int(var.solution_value())
 
-    def solve_all(self, model: abstract.Model, variables_with_values_to_keep: List[Any]) -> Iterator[Dict[Any, int]]:
+    def solve_all(self, model: abstract.Model, variables_with_values_to_keep: List[Any], verbose: bool = False) -> Iterator[Dict[Any, int]]:
         raise NotImplementedError("Not implemented to query the complete solution set using IP")

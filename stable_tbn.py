@@ -41,6 +41,7 @@ def main() -> None:
             solver_method=SolverMethod.INTEGER_PROGRAMMING if args.ip else SolverMethod.CONSTRAINT_PROGRAMMING,
             formulation=formulation,
             bond_weighting_factor=bond_weighting_factor,
+            verbose=args.verbose,
         )
 
         toc = timeit.default_timer()
@@ -54,6 +55,7 @@ def main() -> None:
             solver_method=SolverMethod.INTEGER_PROGRAMMING if args.ip else SolverMethod.CONSTRAINT_PROGRAMMING,
             formulation=formulation,
             bond_weighting_factor=bond_weighting_factor,
+            verbose=args.verbose,
         )
 
         toc = timeit.default_timer()
@@ -114,6 +116,12 @@ def get_command_line_arguments() -> argparse.Namespace:
         "--formulation",
         type=str,
         help=f"specify an alternate solution formulation, one of:\n{', '.join(alternate_formulations)}",
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="display solver output",
     )
     return parser.parse_args()
 

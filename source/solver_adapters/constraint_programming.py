@@ -61,8 +61,7 @@ class Solver(abstract.SolverAdapter):
 
     def solve(self, model: CpModel, variables_with_values_to_keep: List[Any], verbose: bool = False) -> Any:
         self.__internal_solver = cp_model.CpSolver()
-        if verbose:
-            self.__internal_solver.parameters.log_search_progress = True
+        self.__internal_solver.parameters.log_search_progress = verbose
         status = self.__internal_solver.Solve(model)
         return status
 
@@ -72,8 +71,9 @@ class Solver(abstract.SolverAdapter):
         else:
             return self.__internal_solver.Value(var)
 
-    def solve_all(self, model: CpModel, variables_with_values_to_keep) -> Iterator[Dict[Any, int]]:
+    def solve_all(self, model: CpModel, variables_with_values_to_keep, verbose: bool = False) -> Iterator[Dict[Any, int]]:
         internal_solver = cp_model.CpSolver()
+        internal_solver.parameters.log_search_progress = verbose
 
         found_solutions = []
         solution_accumulator = SolutionAccumulator(variables_with_values_to_keep, found_solutions)

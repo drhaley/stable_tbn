@@ -45,11 +45,12 @@ class Solver:
                       tbn: Tbn,
                       formulation: SolverFormulation = SolverFormulation.BEYOND_MULTISET_FORMULATION,
                       bond_weighting_factor: Optional[float] = None,
+                      verbose: bool = False,
                       ) -> Configuration:
         model, ordered_monomer_types, polymer_composition_vars = self.__build_model(
             tbn, formulation=formulation, bond_weighting_factor=bond_weighting_factor
         )
-        status = self.__adapter.solve(model, list(polymer_composition_vars.values()))
+        status = self.__adapter.solve(model, list(polymer_composition_vars.values()), verbose=verbose)
         if status == model.INFEASIBLE:
             raise AssertionError(f"Could not find optimal solution to tbn, was reported infeasible")
         elif status != model.OPTIMAL:
@@ -62,24 +63,26 @@ class Solver:
                        tbn: Tbn,
                        formulation: SolverFormulation = SolverFormulation.BEYOND_MULTISET_FORMULATION,
                        bond_weighting_factor: Optional[float] = None,
+                       verbose: bool = False,
                        ) -> Iterator[Configuration]:
         example_stable_configuration = self.stable_config(
             tbn, formulation=formulation, bond_weighting_factor=bond_weighting_factor
         )
         if formulation == SolverFormulation.LOW_W_FORMULATION:
             max_energy = example_stable_configuration.energy(bond_weighting_factor)
-            return self.configs_with_energy(tbn, formulation=formulation, max_energy=max_energy, bond_weighting_factor=bond_weighting_factor)
+            return self.configs_with_energy(tbn, formulation=formulation, max_energy=max_energy, bond_weighting_factor=bond_weighting_factor, verbose=verbose)
         elif formulation == SolverFormulation.BEYOND_MULTISET_FORMULATION:
             number_of_merges = example_stable_configuration.number_of_merges()
-            return self.configs_with_number_of_merges(tbn, formulation=formulation, number_of_merges=number_of_merges)
+            return self.configs_with_number_of_merges(tbn, formulation=formulation, number_of_merges=number_of_merges, verbose=verbose)
         else:
             number_of_polymers = example_stable_configuration.number_of_polymers()
-            return self.configs_with_number_of_polymers(tbn, formulation=formulation, number_of_polymers=number_of_polymers)
+            return self.configs_with_number_of_polymers(tbn, formulation=formulation, number_of_polymers=number_of_polymers, verbose=verbose)
 
     def configs_with_number_of_polymers(self,
                                         tbn: Tbn,
                                         formulation: SolverFormulation,
                                         number_of_polymers: Optional[int] = None,
+                                        verbose: bool = False
                                         ) -> Iterator[Configuration]:
         total_number_of_monomers = sum(
             tbn.count(monomer_type)
@@ -96,7 +99,7 @@ class Solver:
         model, ordered_monomer_types, polymer_composition_vars = self.__build_model(
             tbn, formulation=formulation, a_priori_number_of_polymers=number_of_polymers,
         )
-        solutions = self.__adapter.solve_all(model, list(polymer_composition_vars.values()))
+        solutions = self.__adapter.solve_all(model, list(polymer_composition_vars.values()), verbose=verbose)
         return [
             self.interpret_solution(tbn, ordered_monomer_types, polymer_composition_vars, solution, formulation=formulation)
             for solution in solutions
@@ -107,6 +110,7 @@ class Solver:
                                       formulation: SolverFormulation,
                                       number_of_merges: Optional[int] = None,
                                       max_number_of_polymers: Optional[int] = None,
+                                      verbose: bool = False,
                                       ) -> Iterator[Configuration]:
         model, ordered_monomer_types, polymer_composition_vars = self.__build_model(
             tbn,
@@ -114,7 +118,7 @@ class Solver:
             max_number_of_merges=number_of_merges,
             a_priori_number_of_polymers=max_number_of_polymers,
         )
-        solutions = self.__adapter.solve_all(model, list(polymer_composition_vars.values()))
+        solutions = self.__adapter.solve_all(model, list(polymer_composition_vars.values()), verbose=verbose)
         return [
             self.interpret_solution(tbn, ordered_monomer_types, polymer_composition_vars, solution, formulation=formulation)
             for solution in solutions
@@ -126,6 +130,7 @@ class Solver:
                             max_energy: Optional[float] = None,
                             bond_weighting_factor: Optional[float] = None,
                             max_number_of_polymers: Optional[int] = None,
+                            verbose: bool = False,
     ) -> Iterator[Configuration]:
         model, ordered_monomer_types, polymer_composition_vars = self.__build_model(
             tbn,
@@ -134,7 +139,7 @@ class Solver:
             bond_weighting_factor=bond_weighting_factor,
             a_priori_number_of_polymers=max_number_of_polymers,
         )
-        solutions = self.__adapter.solve_all(model, list(polymer_composition_vars.values()))
+        solutions = self.__adapter.solve_all(model, list(polymer_composition_vars.values()), verbose=verbose)
         return [
             self.interpret_solution(tbn, ordered_monomer_types, polymer_composition_vars, solution, formulation=formulation)
             for solution in solutions

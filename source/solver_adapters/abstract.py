@@ -49,7 +49,7 @@ class SolverAdapter(ABC):
         pass
 
     @abstractmethod
-    def solve(self, model: Model, variables_with_values_to_keep: List[Any]) -> Any:
+    def solve(self, model: Model, variables_with_values_to_keep: List[Any], verbose: bool = False) -> Any:
         pass
 
     @abstractmethod
@@ -57,5 +57,5 @@ class SolverAdapter(ABC):
         pass
 
     @abstractmethod
-    def solve_all(self, model: Model, variables_with_values_to_keep: List[Any]) -> Iterator[Dict[Any, int]]:
+    def solve_all(self, model: Model, variables_with_values_to_keep: List[Any], verbose: bool = False) -> Iterator[Dict[Any, int]]:
         pass
