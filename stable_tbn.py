@@ -28,7 +28,7 @@ def main() -> None:
             formulation = SolverFormulation.BEYOND_MULTISET_FORMULATION
         bond_weighting_factor = None
     else:
-        if args.method is not None:
+        if args.formulation is not None:
             print("alternate method requested but bond weight was specified, falling back to LOW_W_FORMULATION")
         formulation = SolverFormulation.LOW_W_FORMULATION
         bond_weighting_factor = float(args.weight)
