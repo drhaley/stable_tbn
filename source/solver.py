@@ -33,13 +33,15 @@ class Solver:
             method: SolverMethod = SolverMethod.CONSTRAINT_PROGRAMMING,
     ):
         if method == SolverMethod.CONSTRAINT_PROGRAMMING:
-            self.__adapter = constraint_programming.Solver()
+            self.__single_solve_adapter = constraint_programming.Solver()
             self.__sorted_polymers = True
         elif method == SolverMethod.INTEGER_PROGRAMMING:
-            self.__adapter = integer_programming.Solver()
+            self.__single_solve_adapter = integer_programming.Solver()
             self.__sorted_polymers = False
         else:
             raise NotImplementedError(f"solver not implemented for method {method}")
+
+        self.__multi_solve_adapter = constraint_programming.Solver()  # only implemented for CP to solve_all
 
     def stable_config(self,
                       tbn: Tbn,
@@ -50,13 +52,13 @@ class Solver:
         model, ordered_monomer_types, polymer_composition_vars = self.__build_model(
             tbn, formulation=formulation, bond_weighting_factor=bond_weighting_factor
         )
-        status = self.__adapter.solve(model, list(polymer_composition_vars.values()), verbose=verbose)
+        status = self.__single_solve_adapter.solve(model, list(polymer_composition_vars.values()), verbose=verbose)
         if status == model.INFEASIBLE:
             raise AssertionError(f"Could not find optimal solution to tbn, was reported infeasible")
         elif status != model.OPTIMAL:
             raise AssertionError(f"could not find optimal solution to tbn, got code {status} instead")
         else:
-            value_dict = {var: self.__adapter.value(var) for var in polymer_composition_vars.values()}
+            value_dict = {var: self.__single_solve_adapter.value(var) for var in polymer_composition_vars.values()}
             return self.interpret_solution(tbn, ordered_monomer_types, polymer_composition_vars, value_dict, formulation=formulation)
 
     def stable_configs(self,
@@ -66,7 +68,7 @@ class Solver:
                        verbose: bool = False,
                        ) -> Iterator[Configuration]:
         example_stable_configuration = self.stable_config(
-            tbn, formulation=formulation, bond_weighting_factor=bond_weighting_factor
+            tbn, formulation=formulation, bond_weighting_factor=bond_weighting_factor, verbose=verbose,
         )
         if formulation == SolverFormulation.LOW_W_FORMULATION:
             max_energy = example_stable_configuration.energy(bond_weighting_factor)
@@ -99,7 +101,7 @@ class Solver:
         model, ordered_monomer_types, polymer_composition_vars = self.__build_model(
             tbn, formulation=formulation, a_priori_number_of_polymers=number_of_polymers,
         )
-        solutions = self.__adapter.solve_all(model, list(polymer_composition_vars.values()), verbose=verbose)
+        solutions = self.__multi_solve_adapter.solve_all(model, list(polymer_composition_vars.values()), verbose=verbose)
         return [
             self.interpret_solution(tbn, ordered_monomer_types, polymer_composition_vars, solution, formulation=formulation)
             for solution in solutions
@@ -118,7 +120,7 @@ class Solver:
             max_number_of_merges=number_of_merges,
             a_priori_number_of_polymers=max_number_of_polymers,
         )
-        solutions = self.__adapter.solve_all(model, list(polymer_composition_vars.values()), verbose=verbose)
+        solutions = self.__multi_solve_adapter.solve_all(model, list(polymer_composition_vars.values()), verbose=verbose)
         return [
             self.interpret_solution(tbn, ordered_monomer_types, polymer_composition_vars, solution, formulation=formulation)
             for solution in solutions
@@ -139,7 +141,7 @@ class Solver:
             bond_weighting_factor=bond_weighting_factor,
             a_priori_number_of_polymers=max_number_of_polymers,
         )
-        solutions = self.__adapter.solve_all(model, list(polymer_composition_vars.values()), verbose=verbose)
+        solutions = self.__multi_solve_adapter.solve_all(model, list(polymer_composition_vars.values()), verbose=verbose)
         return [
             self.interpret_solution(tbn, ordered_monomer_types, polymer_composition_vars, solution, formulation=formulation)
             for solution in solutions
@@ -201,7 +203,10 @@ class Solver:
             else:
                 optimize = False
 
-        model = self.__adapter.model()
+        if optimize:
+            model = self.__single_solve_adapter.model()
+        else:
+            model = self.__multi_solve_adapter.model()
 
         if formulation == SolverFormulation.SET_FORMULATION:
             ordered_monomer_types = list(tbn.monomer_types(flatten=True))
@@ -406,7 +411,10 @@ class Solver:
         else:
             optimize = False
 
-        model = self.__adapter.model()
+        if optimize:
+            model = self.__single_solve_adapter.model()
+        else:
+            model = self.__multi_solve_adapter.model()
 
         ordered_monomers = list(tbn.monomer_types(flatten=True))
         total_number_of_monomers = len(ordered_monomers)
