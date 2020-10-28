@@ -40,14 +40,12 @@ class TestSolver(unittest.TestCase):
             ("2[a* b*] \n a b", 2, 1, self.ip_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
             ("2[a* b*] \n a b", 2, 1, self.ip_solver, SolverFormulation.LOW_W_FORMULATION),
 
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.SET_FORMULATION),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.MULTISET_FORMULATION),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.LOW_W_FORMULATION),
 
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.STABLEGEN_FORMULATION),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.SET_FORMULATION),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.MULTISET_FORMULATION),
@@ -111,21 +109,27 @@ class TestSolver(unittest.TestCase):
 
     def test_stable_configs(self):
         test_cases = [
-            #("a* b* \n a b \n a* \n b*", 2, 1, self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),  # TODO: re-enable when implemented
+            ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),
             ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
             ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.SET_FORMULATION),
             ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.MULTISET_FORMULATION),
             ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
             ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.LOW_W_FORMULATION),
 
-            #("2[a* b*] \n a b", 4, 1, self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),  # TODO: re-enable when implemented
+            ("a a \n a* a*", 2, 1, self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),
+            ("a a \n a* a*", 1, 1, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
+            ("a a \n a* a*", 1, 1, self.cp_solver, SolverFormulation.SET_FORMULATION),
+            ("a a \n a* a*", 1, 1, self.cp_solver, SolverFormulation.MULTISET_FORMULATION),
+            ("a a \n a* a*", 1, 1, self.cp_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
+            ("a a \n a* a*", 1, 1, self.cp_solver, SolverFormulation.LOW_W_FORMULATION),
+
+            ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),
             ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
             ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.SET_FORMULATION),
             ("2[a* b*] \n a b", 1, 1, self.cp_solver, SolverFormulation.MULTISET_FORMULATION),
             ("2[a* b*] \n a b", 1, 1, self.cp_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
             ("2[a* b*] \n a b", 1, 1, self.cp_solver, SolverFormulation.LOW_W_FORMULATION),
 
-            #("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 4, 5, self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),  # TODO: re-enable when implemented
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 4, 5, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 4, 5, self.cp_solver, SolverFormulation.SET_FORMULATION),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 3, 5, self.cp_solver, SolverFormulation.MULTISET_FORMULATION),
@@ -178,17 +182,17 @@ class TestSolver(unittest.TestCase):
             # second argument is a list of number of configurations expected for specific numbers of polymers:
             #  e.g. [a,b,c,d] => 'a' configurations with 1 polymer, 'b' configurations with 2 polymers, etc., up to 4
 
-            #("a* b* \n a b \n a* \n b*", [12, 7, 1, 0], self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),  # TODO: re-enable when implemented
+            #("a* b* \n a b \n a* \n b*", [12, 7, 1, 0], self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),
             ("a* b* \n a b \n a* \n b*", [12, 7, 1, 0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
             ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.SET_FORMULATION),
             ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.MULTISET_FORMULATION),
 
-            #("2[a* b*] \n a b", [ 5, 2, 0, 0], self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),  # TODO: re-enable when implemented
+            #("2[a* b*] \n a b", [ 5, 2, 0, 0], self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),
             ("2[a* b*] \n a b", [ 5, 2, 0, 0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
             ("2[a* b*] \n a b", [ 1, 2, 0, 0], self.cp_solver, SolverFormulation.SET_FORMULATION),
             ("2[a* b*] \n a b", [ 1, 1, 0, 0], self.cp_solver, SolverFormulation.MULTISET_FORMULATION),
 
-            #("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [9,4,0,0], self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),  # TODO: re-enable when implemented
+            #("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [9,4,0,0], self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [9,4,0,0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [1,4,0,0], self.cp_solver, SolverFormulation.SET_FORMULATION),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [1,3,0,0], self.cp_solver, SolverFormulation.MULTISET_FORMULATION),

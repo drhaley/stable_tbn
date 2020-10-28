@@ -116,6 +116,13 @@ class Monomer:
     def net_count(self, domain: Domain) -> int:
         return self.__domain_counts.get(domain, 0) - self.__domain_counts.get(domain.complement(), 0)
 
+    def as_explicit_list(self) -> List[Domain]:
+        def get_next_item_from_multiset(multiset):
+            for item, count in multiset.items():
+                for _ in range(count):
+                    yield item
+        return list(get_next_item_from_multiset(self.__domain_counts))
+
     @classmethod
     def regex(cls):
         domain_list_regex = f"{cls.multiple_domain_regex}(?: {cls.multiple_domain_regex})*"

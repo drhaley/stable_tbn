@@ -183,3 +183,25 @@ class TestMonomer(unittest.TestCase):
         name_regex = r"[A-Za-z0-9_]+"
         domain_list_regex = f"{multiple_domain_regex}(?: {multiple_domain_regex})*"
         self.assertEqual(Monomer.regex(), f"{domain_list_regex}(?:|\\s*>{name_regex})")
+
+    def test_as_explicit_list(self):
+        self.assertEqual(
+            [Domain("x0"), Domain("x1")],
+            self.x.as_explicit_list()
+        )
+        self.assertEqual(
+            [Domain("y0"), Domain("y0"), Domain("y1"), Domain("y2"), Domain("y2"), Domain("y2")],
+            self.y.as_explicit_list()
+        )
+        self.assertEqual(
+            [Domain("a"), Domain("b"), Domain("c*")],
+            self.abc_star.as_explicit_list()
+        )
+        self.assertEqual(
+            [Domain("a*"), Domain("a*"), Domain("a*")],
+            self.triple_a_star.as_explicit_list()
+        )
+        self.assertEqual(
+            [Domain("a"), Domain("a*"), Domain("b"), Domain("b"), Domain("b*")],
+            self.semi_self_saturated_monomer.as_explicit_list()
+        )

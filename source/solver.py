@@ -412,6 +412,23 @@ class Solver:
         model.set_big_M(total_number_of_monomers)
 
         ############ Variables ############
+        if formulation == SolverFormulation.STABLEGEN_FORMULATION:
+            pair_vars = {}
+            for monomer_number, monomer in enumerate(ordered_monomers):
+                for domain_number, domain_type in enumerate(monomer.as_explicit_list()):
+                    for second_monomer_number, second_monomer in enumerate(ordered_monomers):
+                        for second_domain_number, second_domain_type in enumerate(second_monomer.as_explicit_list()):
+                            if domain_type == second_domain_type.complement():
+                                if (monomer > second_monomer) or \
+                                        (monomer == second_monomer and domain_number > second_domain_number):
+                                    # symmetric condition
+                                    new_variable_or_value = pair_vars[(second_monomer_number, second_domain_number), (monomer_number, domain_number)]
+                                else:
+                                    new_variable_or_value = model.bool_var(f"pair_{monomer_number}_{domain_number}_{second_monomer_number}_{second_domain_number}")
+                            else:
+                                new_variable_or_value = 0
+                            pair_vars[(monomer_number, domain_number), (second_monomer_number, second_domain_number)] = new_variable_or_value
+
         # bind_vars[i, j] = 1 if monomers i and j are bound into the same polymer, 0 else
         bind_vars = {}
         for i in range(total_number_of_monomers):
@@ -435,13 +452,35 @@ class Solver:
             for j in range(i+1, total_number_of_monomers):
                 model.AddChainedImplication(bind_vars[i, j], model.complement_var(rep_vars[j]))
 
-        # saturation constraint: limiting sites must be in the minority in any polymer
-        for i in range(total_number_of_monomers):
-            for domain in limiting_domain_types:
-                model.Add(
-                    sum(bind_vars[i, j] * ordered_monomers[j].net_count(domain)
-                        for j in range(total_number_of_monomers)) <= 0
-                )
+        if formulation == SolverFormulation.STABLEGEN_FORMULATION:
+            # saturation constraint: all limiting sites are paired
+            for this_monomer_number, monomer in enumerate(ordered_monomers):
+                for this_domain_number, domain in enumerate(monomer.as_explicit_list()):
+                    if domain in limiting_domain_types:
+                        model.Add(
+                            1 == sum(val for (((monomer_number, domain_number), (_,_)), val) in pair_vars.items()
+                                     if this_monomer_number == monomer_number and this_domain_number == domain_number)
+                        )
+
+            # cannot pair more than once
+            for this_monomer_number, monomer in enumerate(ordered_monomers):
+                for this_domain_number, domain in enumerate(monomer.as_explicit_list()):
+                    model.Add(
+                        1 >= sum(val for (((monomer_number, domain_number), (_,_)), val) in pair_vars.items()
+                                 if this_monomer_number == monomer_number and this_domain_number == domain_number)
+                    )
+
+            # pair implies bond
+            for ((monomer_number, domain_number), (second_monomer_number, second_domain_number)), var in pair_vars.items():
+                model.AddChainedImplication(var, bind_vars[monomer_number, second_monomer_number])
+        else:
+            # saturation constraint: limiting sites must be in the minority in any polymer
+            for i in range(total_number_of_monomers):
+                for domain in limiting_domain_types:
+                    model.Add(
+                        sum(bind_vars[i, j] * ordered_monomers[j].net_count(domain)
+                            for j in range(total_number_of_monomers)) <= 0
+                    )
 
         # this aggregate expression aids in readability of the code, but is not an explicit variable or constraints
         number_of_polymers = sum(rep_vars[i] for i in range(total_number_of_monomers))

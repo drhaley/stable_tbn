@@ -30,14 +30,18 @@ class CpModel(abstract.Model, cp_model.CpModel):
             consequent = args[-1]
             antecedents = list(args[:-1])
 
-        if type(consequent) is not cp_model.BoundedLinearExpression:
-            constraint = self.Add(consequent != int(False))
+        for antecedent in antecedents:
+            if type(antecedent) is int and antecedent == 0:  # have to do it this way because bool vars in CP == 0
+                return None
         else:
-            constraint = self.Add(consequent)
+            if type(consequent) is not cp_model.BoundedLinearExpression:
+                constraint = self.Add(consequent != int(False))
+            else:
+                constraint = self.Add(consequent)
 
-        constraint = constraint.OnlyEnforceIf(antecedents)
+            constraint = constraint.OnlyEnforceIf([x for x in antecedents if x != 1 and x != True])
 
-        return constraint
+            return constraint
 
     def AddEqualToZeroImplication(self, *args) -> Any:
         return self.AddChainedImplication(*args[:-1], args[-1] == 0)
