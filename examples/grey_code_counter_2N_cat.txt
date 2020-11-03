@@ -1,0 +1,58 @@
+A_domain_0_0* A_domain_0_1* A_domain_0_2* A_domain_0_3* A_domain_0_4* A_domain_0_5* A_domain_1_0* A_domain_1_1* A_domain_1_2* A_domain_1_3* A_domain_1_4* A_domain_1_5* A_domain_2_0* A_domain_2_1* A_domain_2_2* A_domain_2_3* A_domain_2_4* A_domain_2_5* A_domain_3_0* A_domain_3_1* A_domain_3_2* A_domain_3_3* A_domain_3_4* A_domain_3_5* A_domain_4_0* A_domain_4_1* A_domain_4_2* A_domain_4_3* A_domain_4_4* A_domain_4_5* A_domain_5_0* A_domain_5_1* A_domain_5_2* A_domain_5_3* A_domain_5_4* A_domain_5_5* >A_Grid
+A_domain_0_0 A_domain_0_1 A_domain_0_2 A_domain_0_3 A_domain_0_4 A_domain_0_5 >A_H0
+A_domain_1_0 A_domain_1_1 A_domain_1_2 A_domain_1_3 A_domain_1_4 A_domain_1_5 >A_H1
+A_domain_2_0 A_domain_2_1 A_domain_2_2 A_domain_2_3 A_domain_2_4 A_domain_2_5 >A_H2
+A_domain_3_0 A_domain_3_1 A_domain_3_2 A_domain_3_3 A_domain_3_4 A_domain_3_5 >A_H3
+A_domain_4_0 A_domain_4_1 A_domain_4_2 A_domain_4_3 A_domain_4_4 A_domain_4_5 >A_H4
+A_domain_5_0 A_domain_5_1 A_domain_5_2 A_domain_5_3 A_domain_5_4 A_domain_5_5 >A_H5
+A_domain_0_0 A_domain_1_0 A_domain_2_0 A_domain_3_0 A_domain_4_0 A_domain_5_0 >A_V0
+A_domain_0_1 A_domain_1_1 A_domain_2_1 A_domain_3_1 A_domain_4_1 A_domain_5_1 >A_V1
+A_domain_0_2 A_domain_1_2 A_domain_2_2 A_domain_3_2 A_domain_4_2 A_domain_5_2 >A_V2
+A_domain_0_3 A_domain_1_3 A_domain_2_3 A_domain_3_3 A_domain_4_3 A_domain_5_3 >A_V3
+A_domain_0_4 A_domain_1_4 A_domain_2_4 A_domain_3_4 A_domain_4_4 A_domain_5_4 >A_V4
+A_domain_0_5 A_domain_1_5 A_domain_2_5 A_domain_3_5 A_domain_4_5 A_domain_5_5 >A_V5
+B_domain_0_0* B_domain_0_1* B_domain_0_2* B_domain_0_3* B_domain_0_4* B_domain_0_5* B_domain_1_0* B_domain_1_1* B_domain_1_2* B_domain_1_3* B_domain_1_4* B_domain_1_5* B_domain_2_0* B_domain_2_1* B_domain_2_2* B_domain_2_3* B_domain_2_4* B_domain_2_5* B_domain_3_0* B_domain_3_1* B_domain_3_2* B_domain_3_3* B_domain_3_4* B_domain_3_5* B_domain_4_0* B_domain_4_1* B_domain_4_2* B_domain_4_3* B_domain_4_4* B_domain_4_5* B_domain_5_0* B_domain_5_1* B_domain_5_2* B_domain_5_3* B_domain_5_4* B_domain_5_5* >B_Grid
+B_domain_0_0 B_domain_0_1 B_domain_0_2 B_domain_0_3 B_domain_0_4 B_domain_0_5 >B_H0
+B_domain_1_0 B_domain_1_1 B_domain_1_2 B_domain_1_3 B_domain_1_4 B_domain_1_5 >B_H1
+B_domain_2_0 B_domain_2_1 B_domain_2_2 B_domain_2_3 B_domain_2_4 B_domain_2_5 >B_H2
+B_domain_3_0 B_domain_3_1 B_domain_3_2 B_domain_3_3 B_domain_3_4 B_domain_3_5 >B_H3
+B_domain_4_0 B_domain_4_1 B_domain_4_2 B_domain_4_3 B_domain_4_4 B_domain_4_5 >B_H4
+B_domain_5_0 B_domain_5_1 B_domain_5_2 B_domain_5_3 B_domain_5_4 B_domain_5_5 >B_H5
+B_domain_0_0 B_domain_1_0 B_domain_2_0 B_domain_3_0 B_domain_4_0 B_domain_5_0 A_domain_0_0 >B_V0
+B_domain_0_1 B_domain_1_1 B_domain_2_1 B_domain_3_1 B_domain_4_1 B_domain_5_1 A_domain_1_1 >B_V1
+B_domain_0_2 B_domain_1_2 B_domain_2_2 B_domain_3_2 B_domain_4_2 B_domain_5_2 A_domain_2_2 >B_V2
+B_domain_0_3 B_domain_1_3 B_domain_2_3 B_domain_3_3 B_domain_4_3 B_domain_5_3 A_domain_3_3 >B_V3
+B_domain_0_4 B_domain_1_4 B_domain_2_4 B_domain_3_4 B_domain_4_4 B_domain_5_4 A_domain_4_4 >B_V4
+B_domain_0_5 B_domain_1_5 B_domain_2_5 B_domain_3_5 B_domain_4_5 B_domain_5_5 A_domain_5_5 >B_V5
+D_domain_0_0* D_domain_0_1* D_domain_0_2* D_domain_0_3* D_domain_0_4* D_domain_0_5* D_domain_1_0* D_domain_1_1* D_domain_1_2* D_domain_1_3* D_domain_1_4* D_domain_1_5* D_domain_2_0* D_domain_2_1* D_domain_2_2* D_domain_2_3* D_domain_2_4* D_domain_2_5* D_domain_3_0* D_domain_3_1* D_domain_3_2* D_domain_3_3* D_domain_3_4* D_domain_3_5* D_domain_4_0* D_domain_4_1* D_domain_4_2* D_domain_4_3* D_domain_4_4* D_domain_4_5* D_domain_5_0* D_domain_5_1* D_domain_5_2* D_domain_5_3* D_domain_5_4* D_domain_5_5* >D_Grid
+D_domain_0_0 D_domain_0_1 D_domain_0_2 D_domain_0_3 D_domain_0_4 D_domain_0_5 >D_H0
+D_domain_1_0 D_domain_1_1 D_domain_1_2 D_domain_1_3 D_domain_1_4 D_domain_1_5 B_domain_1_0 >D_H1
+D_domain_2_0 D_domain_2_1 D_domain_2_2 D_domain_2_3 D_domain_2_4 D_domain_2_5 A_domain_2_0 B_domain_2_1 >D_H2
+D_domain_3_0 D_domain_3_1 D_domain_3_2 D_domain_3_3 D_domain_3_4 D_domain_3_5 A_domain_3_0 A_domain_3_1 B_domain_3_2 >D_H3
+D_domain_4_0 D_domain_4_1 D_domain_4_2 D_domain_4_3 D_domain_4_4 D_domain_4_5 A_domain_4_0 A_domain_4_1 A_domain_4_2 B_domain_4_3 >D_H4
+D_domain_5_0 D_domain_5_1 D_domain_5_2 D_domain_5_3 D_domain_5_4 D_domain_5_5 A_domain_5_0 A_domain_5_1 A_domain_5_2 A_domain_5_3 B_domain_5_4 >D_H5
+D_domain_0_0 D_domain_1_0 D_domain_2_0 D_domain_3_0 D_domain_4_0 D_domain_5_0 C_domain_0_0 >D_V0
+D_domain_0_1 D_domain_1_1 D_domain_2_1 D_domain_3_1 D_domain_4_1 D_domain_5_1 C_domain_1_1 >D_V1
+D_domain_0_2 D_domain_1_2 D_domain_2_2 D_domain_3_2 D_domain_4_2 D_domain_5_2 C_domain_2_2 >D_V2
+D_domain_0_3 D_domain_1_3 D_domain_2_3 D_domain_3_3 D_domain_4_3 D_domain_5_3 C_domain_3_3 >D_V3
+D_domain_0_4 D_domain_1_4 D_domain_2_4 D_domain_3_4 D_domain_4_4 D_domain_5_4 C_domain_4_4 >D_V4
+D_domain_0_5 D_domain_1_5 D_domain_2_5 D_domain_3_5 D_domain_4_5 D_domain_5_5 C_domain_5_5 >D_V5
+C_domain_0_0* C_domain_0_1* C_domain_0_2* C_domain_0_3* C_domain_0_4* C_domain_0_5* C_domain_1_0* C_domain_1_1* C_domain_1_2* C_domain_1_3* C_domain_1_4* C_domain_1_5* C_domain_2_0* C_domain_2_1* C_domain_2_2* C_domain_2_3* C_domain_2_4* C_domain_2_5* C_domain_3_0* C_domain_3_1* C_domain_3_2* C_domain_3_3* C_domain_3_4* C_domain_3_5* C_domain_4_0* C_domain_4_1* C_domain_4_2* C_domain_4_3* C_domain_4_4* C_domain_4_5* C_domain_5_0* C_domain_5_1* C_domain_5_2* C_domain_5_3* C_domain_5_4* C_domain_5_5* >C_Grid
+C_domain_0_0 C_domain_0_1 C_domain_0_2 C_domain_0_3 C_domain_0_4 C_domain_0_5 >C_H0
+C_domain_1_0 C_domain_1_1 C_domain_1_2 C_domain_1_3 C_domain_1_4 C_domain_1_5 A_domain_1_0 >C_H1
+C_domain_2_0 C_domain_2_1 C_domain_2_2 C_domain_2_3 C_domain_2_4 C_domain_2_5 A_domain_2_1 >C_H2
+C_domain_3_0 C_domain_3_1 C_domain_3_2 C_domain_3_3 C_domain_3_4 C_domain_3_5 A_domain_3_2 >C_H3
+C_domain_4_0 C_domain_4_1 C_domain_4_2 C_domain_4_3 C_domain_4_4 C_domain_4_5 A_domain_4_3 >C_H4
+C_domain_5_0 C_domain_5_1 C_domain_5_2 C_domain_5_3 C_domain_5_4 C_domain_5_5 A_domain_5_4 >C_H5
+C_domain_0_0 C_domain_1_0 C_domain_2_0 C_domain_3_0 C_domain_4_0 C_domain_5_0 B_domain_0_0 >C_V0
+C_domain_0_1 C_domain_1_1 C_domain_2_1 C_domain_3_1 C_domain_4_1 C_domain_5_1 B_domain_1_1 >C_V1
+C_domain_0_2 C_domain_1_2 C_domain_2_2 C_domain_3_2 C_domain_4_2 C_domain_5_2 B_domain_2_2 >C_V2
+C_domain_0_3 C_domain_1_3 C_domain_2_3 C_domain_3_3 C_domain_4_3 C_domain_5_3 B_domain_3_3 >C_V3
+C_domain_0_4 C_domain_1_4 C_domain_2_4 C_domain_3_4 C_domain_4_4 C_domain_5_4 B_domain_4_4 >C_V4
+C_domain_0_5 C_domain_1_5 C_domain_2_5 C_domain_3_5 C_domain_4_5 C_domain_5_5 B_domain_5_5 >C_V5
+B_domain_2_0 B_domain_3_0 B_domain_3_1 B_domain_4_0 B_domain_4_1 B_domain_4_2 B_domain_5_0 B_domain_5_1 B_domain_5_2 B_domain_5_3 >B_Cat2
+D_domain_0_0 D_domain_1_1 D_domain_2_2 D_domain_3_3 D_domain_4_4 D_domain_5_5 >D_Cat0
+D_domain_1_0 D_domain_2_1 D_domain_3_2 D_domain_4_3 D_domain_5_4 >D_Cat1
+D_domain_2_0 D_domain_3_0 D_domain_3_1 D_domain_4_0 D_domain_4_1 D_domain_4_2 D_domain_5_0 D_domain_5_1 D_domain_5_2 D_domain_5_3 >D_Cat2
+C_domain_1_0 C_domain_2_1 C_domain_3_2 C_domain_4_3 C_domain_5_4 >C_Cat1
+C_domain_2_0 C_domain_3_0 C_domain_3_1 C_domain_4_0 C_domain_4_1 C_domain_4_2 C_domain_5_0 C_domain_5_1 C_domain_5_2 C_domain_5_3 >C_Cat2
