@@ -20,7 +20,10 @@ class CpModel(abstract.Model, cp_model.CpModel):
     def complement_var(self, var: cp_model.IntVar) -> cp_model.IntVar:
         return var.Not()
 
-    def AddChainedImplication(self, *args) -> Any:
+    def add_constraint(self, *args) -> Any:
+        return self.Add(*args)
+
+    def add_implication(self, *args) -> Any:
         # intended call: .AddChainedImplication(antecedent1, antecedent2, ..., consequent)
         if len(args) < 2:
             raise AssertionError(
@@ -35,19 +38,25 @@ class CpModel(abstract.Model, cp_model.CpModel):
                 return None
         else:
             if type(consequent) is not cp_model.BoundedLinearExpression:
-                constraint = self.Add(consequent != int(False))
+                constraint = self.add_constraint(consequent != int(False))
             else:
-                constraint = self.Add(consequent)
+                constraint = self.add_constraint(consequent)
 
-            constraint = constraint.OnlyEnforceIf([x for x in antecedents if x != 1 and x != True])
+            constraint = constraint.OnlyEnforceIf([x for x in antecedents if x != 1 and x is not True])
 
             return constraint
 
-    def AddEqualToZeroImplication(self, *args) -> Any:
-        return self.AddChainedImplication(*args[:-1], args[-1] == 0)
+    def add_equal_to_zero_implication(self, *args) -> Any:
+        return self.add_implication(*args[:-1], args[-1] == 0)
 
-    def AddGreaterThanZeroImplication(self, *args) -> Any:
-        return self.AddChainedImplication(*args[:-1], args[-1] > 0)
+    def add_greater_than_zero_implication(self, *args) -> Any:
+        return self.add_implication(*args[:-1], args[-1] > 0)
+
+    def minimize(self, *args, **kargs) -> None:
+        self.Minimize(*args, **kargs)
+
+    def maximize(self, *args, **kargs) -> None:
+        self.Maximize(*args, **kargs)
 
 
 class Solver(abstract.SolverAdapter):
@@ -59,7 +68,7 @@ class Solver(abstract.SolverAdapter):
     def model() -> abstract.Model:
         return CpModel()
 
-    def solve(self, model: CpModel, variables_with_values_to_keep: List[Any], verbose: bool = False) -> Any:
+    def solve(self, model: abstract.Model, variables_with_values_to_keep: List[Any], verbose: bool = False) -> Any:
         self.__internal_solver = cp_model.CpSolver()
         self.__internal_solver.parameters.log_search_progress = verbose
         status = self.__internal_solver.Solve(model)
@@ -71,7 +80,8 @@ class Solver(abstract.SolverAdapter):
         else:
             return self.__internal_solver.Value(var)
 
-    def solve_all(self, model: CpModel, variables_with_values_to_keep, verbose: bool = False) -> Iterator[Dict[Any, int]]:
+    def solve_all(self, model: abstract.Model, variables_with_values_to_keep, verbose: bool = False)\
+            -> Iterator[Dict[Any, int]]:
         internal_solver = cp_model.CpSolver()
         internal_solver.parameters.log_search_progress = verbose
 

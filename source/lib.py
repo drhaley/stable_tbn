@@ -1,4 +1,3 @@
-import os
 from typing import Iterator, Optional
 from source.solver import Solver, SolverMethod, SolverFormulation
 from source.configuration import Configuration
@@ -12,8 +11,7 @@ def get_stable_configs(
         formulation: SolverFormulation = SolverFormulation.POLYMER_UNBOUNDED_MATRIX,
         bond_weighting_factor: Optional[float] = None,
         verbose: bool = False,
-    ) -> Iterator[Configuration]:
-
+) -> Iterator[Configuration]:
     tbn = get_tbn_from_filename(tbn_filename)
     _ = get_constraints_from_filename(constraint_filename)
     solver = Solver(method=solver_method)
@@ -31,8 +29,7 @@ def get_stable_config(
         formulation: SolverFormulation = SolverFormulation.POLYMER_UNBOUNDED_MATRIX,
         bond_weighting_factor: Optional[float] = None,
         verbose: bool = False,
-    ) -> Configuration:
-
+) -> Configuration:
     tbn = get_tbn_from_filename(tbn_filename)
     _ = get_constraints_from_filename(constraint_filename)
     solver = Solver(method=solver_method)

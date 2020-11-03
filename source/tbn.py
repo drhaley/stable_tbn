@@ -1,6 +1,6 @@
 import re
 from math import inf as infinity
-from math import isnan as isNotANumber
+from math import isnan as not_a_number
 from typing import Dict, Iterator, Union
 
 from source.monomer import Monomer
@@ -76,7 +76,7 @@ class Tbn:
 
         return Tbn(monomer_counts)
 
-    def monomer_types(self, flatten:bool = False) -> Iterator[Monomer]:
+    def monomer_types(self, flatten: bool = False) -> Iterator[Monomer]:
         for monomer in sorted(self.__monomer_counts):
             if flatten:
                 if self.count(monomer) == infinity:
@@ -93,7 +93,7 @@ class Tbn:
             count_of_monomer = self.__monomer_counts[monomer]
             for domain in monomer.unstarred_domain_types():
                 domain_tally[domain] = monomer.net_count(domain) * count_of_monomer + domain_tally.get(domain, 0)
-                if isNotANumber(domain_tally[domain]):  # result of infinity - infinity
+                if not_a_number(domain_tally[domain]):  # result of infinity - infinity
                     raise AssertionError(f"domain {domain} exists in opposing infinite quantities")
 
         for unstarred_domain in sorted(domain_tally.keys()):

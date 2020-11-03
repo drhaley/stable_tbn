@@ -149,7 +149,6 @@ class TestTbn(unittest.TestCase):
                 for monomer_type in monomer_types:
                     self.assertEqual(tbn.count(monomer_type), flattened_list.count(monomer_type))
 
-
     def test_limiting_domain_types(self):
         tests = [
             ({}, []),

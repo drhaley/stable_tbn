@@ -59,7 +59,9 @@ class Solver:
             raise AssertionError(f"could not find optimal solution to tbn, got code {status} instead")
         else:
             value_dict = {var: self.__single_solve_adapter.value(var) for var in polymer_composition_vars.values()}
-            return self.interpret_solution(tbn, ordered_monomer_types, polymer_composition_vars, value_dict, formulation=formulation)
+            return self.interpret_solution(
+                tbn, ordered_monomer_types, polymer_composition_vars, value_dict, formulation=formulation
+            )
 
     def stable_configs(self,
                        tbn: Tbn,
@@ -72,13 +74,29 @@ class Solver:
         )
         if formulation == SolverFormulation.VARIABLE_BOND_WEIGHT:
             max_energy = example_stable_configuration.energy(bond_weighting_factor)
-            return self.configs_with_energy(tbn, formulation=formulation, max_energy=max_energy, bond_weighting_factor=bond_weighting_factor, verbose=verbose)
+            return self.configs_with_energy(
+                tbn,
+                formulation=formulation,
+                max_energy=max_energy,
+                bond_weighting_factor=bond_weighting_factor,
+                verbose=verbose
+            )
         elif formulation == SolverFormulation.POLYMER_UNBOUNDED_MATRIX:
             number_of_merges = example_stable_configuration.number_of_merges()
-            return self.configs_with_number_of_merges(tbn, formulation=formulation, number_of_merges=number_of_merges, verbose=verbose)
+            return self.configs_with_number_of_merges(
+                tbn,
+                formulation=formulation,
+                number_of_merges=number_of_merges,
+                verbose=verbose
+            )
         else:
             number_of_polymers = example_stable_configuration.number_of_polymers()
-            return self.configs_with_number_of_polymers(tbn, formulation=formulation, number_of_polymers=number_of_polymers, verbose=verbose)
+            return self.configs_with_number_of_polymers(
+                tbn,
+                formulation=formulation,
+                number_of_polymers=number_of_polymers,
+                verbose=verbose
+            )
 
     def configs_with_number_of_polymers(self,
                                         tbn: Tbn,
@@ -101,9 +119,13 @@ class Solver:
         model, ordered_monomer_types, polymer_composition_vars = self.__build_model(
             tbn, formulation=formulation, a_priori_number_of_polymers=number_of_polymers,
         )
-        solutions = self.__multi_solve_adapter.solve_all(model, list(polymer_composition_vars.values()), verbose=verbose)
+        solutions = self.__multi_solve_adapter.solve_all(
+            model, list(polymer_composition_vars.values()), verbose=verbose
+        )
         return [
-            self.interpret_solution(tbn, ordered_monomer_types, polymer_composition_vars, solution, formulation=formulation)
+            self.interpret_solution(
+                tbn, ordered_monomer_types, polymer_composition_vars, solution, formulation=formulation
+            )
             for solution in solutions
         ]
 
@@ -120,9 +142,13 @@ class Solver:
             max_number_of_merges=number_of_merges,
             a_priori_number_of_polymers=max_number_of_polymers,
         )
-        solutions = self.__multi_solve_adapter.solve_all(model, list(polymer_composition_vars.values()), verbose=verbose)
+        solutions = self.__multi_solve_adapter.solve_all(
+            model, list(polymer_composition_vars.values()), verbose=verbose
+        )
         return [
-            self.interpret_solution(tbn, ordered_monomer_types, polymer_composition_vars, solution, formulation=formulation)
+            self.interpret_solution(
+                tbn, ordered_monomer_types, polymer_composition_vars, solution, formulation=formulation
+            )
             for solution in solutions
         ]
 
@@ -133,7 +159,7 @@ class Solver:
                             bond_weighting_factor: Optional[float] = None,
                             max_number_of_polymers: Optional[int] = None,
                             verbose: bool = False,
-    ) -> Iterator[Configuration]:
+                            ) -> Iterator[Configuration]:
         model, ordered_monomer_types, polymer_composition_vars = self.__build_model(
             tbn,
             formulation=formulation,
@@ -141,9 +167,13 @@ class Solver:
             bond_weighting_factor=bond_weighting_factor,
             a_priori_number_of_polymers=max_number_of_polymers,
         )
-        solutions = self.__multi_solve_adapter.solve_all(model, list(polymer_composition_vars.values()), verbose=verbose)
+        solutions = self.__multi_solve_adapter.solve_all(
+            model, list(polymer_composition_vars.values()), verbose=verbose
+        )
         return [
-            self.interpret_solution(tbn, ordered_monomer_types, polymer_composition_vars, solution, formulation=formulation)
+            self.interpret_solution(
+                tbn, ordered_monomer_types, polymer_composition_vars, solution, formulation=formulation
+            )
             for solution in solutions
         ]
 
@@ -242,9 +272,9 @@ class Solver:
         # set big M, in case integer programming algorithm is called for instead of constraint programming
         #  this value must be at least as large as the maximum number of (tracked) monomers that can be in a polymer
         if formulation in {SolverFormulation.POLYMER_UNBOUNDED_MATRIX, SolverFormulation.VARIABLE_BOND_WEIGHT}:
-            model.set_big_M(upper_bound_on_total_monomers_in_complexes)
+            model.set_big_m(upper_bound_on_total_monomers_in_complexes)
         else:
-            model.set_big_M(total_number_of_monomers)
+            model.set_big_m(total_number_of_monomers)
 
         if a_priori_number_of_polymers is None:
             if formulation in {SolverFormulation.POLYMER_UNBOUNDED_MATRIX, SolverFormulation.VARIABLE_BOND_WEIGHT}:
@@ -287,16 +317,17 @@ class Solver:
         # monomer conservation; must use all limiting monomers, and cannot exceed the count of other monomers
         # if not using BEYOND_MULTISET_FORMULATION or LOW_W_FORMULATION, all monomers must be used in exact counts
         for i, monomer in enumerate(ordered_monomer_types):
-            if (formulation not in [SolverFormulation.POLYMER_UNBOUNDED_MATRIX, SolverFormulation.VARIABLE_BOND_WEIGHT])\
-                    or (monomer in limiting_monomer_types):
-                model.Add(
+            if (formulation not in [
+                SolverFormulation.POLYMER_UNBOUNDED_MATRIX, SolverFormulation.VARIABLE_BOND_WEIGHT
+            ]) or (monomer in limiting_monomer_types):
+                model.add_constraint(
                     sum(
                         polymer_composition_vars[i, j]
                         for j in range(a_priori_number_of_polymers)
                     ) == monomer_counts[i]
                 )
             elif monomer_counts[i] < infinity:
-                model.Add(
+                model.add_constraint(
                     sum(
                         polymer_composition_vars[i, j]
                         for j in range(a_priori_number_of_polymers)
@@ -310,7 +341,7 @@ class Solver:
                     deficit = 0
                 else:
                     deficit = bond_deficit_vars[domain, j]
-                model.Add(
+                model.add_constraint(
                     sum(
                         monomer.net_count(domain) * polymer_composition_vars[i, j]
                         for i, monomer in enumerate(ordered_monomer_types)
@@ -324,11 +355,11 @@ class Solver:
         #  superfluous singletons are made explicit, which results in many isomorphic solutions
         for j in range(a_priori_number_of_polymers):
             if formulation in {SolverFormulation.POLYMER_UNBOUNDED_MATRIX, SolverFormulation.VARIABLE_BOND_WEIGHT}:
-                model.Add(indicator_vars[j] <=
+                model.add_constraint(indicator_vars[j] <=
                           sum(polymer_composition_vars[i, j]
                               for i, monomer in enumerate(ordered_monomer_types) if monomer in limiting_monomer_types))
             else:
-                model.Add(indicator_vars[j] <=
+                model.add_constraint(indicator_vars[j] <=
                           sum(polymer_composition_vars[i, j]
                               for i, _ in enumerate(ordered_monomer_types)))
 
@@ -347,25 +378,25 @@ class Solver:
                     for domain in limiting_domain_types
                     for j in range(a_priori_number_of_polymers)
             )
-            SCALING_FACTOR = 100
+            scaling_factor = 100
             energy = (
-                    round(SCALING_FACTOR * bond_weighting_factor) * total_bond_deficit \
-                    + SCALING_FACTOR * number_of_merges
+                    round(scaling_factor * bond_weighting_factor) * total_bond_deficit
+                    + scaling_factor * number_of_merges
             )
             if optimize:
-                model.Minimize(energy)
+                model.minimize(energy)
             else:
-                model.Add(energy <= ceil(SCALING_FACTOR * max_energy))
+                model.add_constraint(energy <= ceil(scaling_factor * max_energy))
         elif formulation == SolverFormulation.POLYMER_UNBOUNDED_MATRIX:
             if optimize:
-                model.Minimize(number_of_merges)
+                model.minimize(number_of_merges)
             else:
-                model.Add(number_of_merges <= max_number_of_merges)
+                model.add_constraint(number_of_merges <= max_number_of_merges)
         else:
             if optimize:
-                model.Maximize(number_of_polymers)
+                model.maximize(number_of_polymers)
             else:
-                model.Add(number_of_polymers == a_priori_number_of_polymers)
+                model.add_constraint(number_of_polymers == a_priori_number_of_polymers)
 
         if self.__sorted_polymers:
             # tiebreaker variables that enforce lexicographical ordering of polymers based upon monomer counts within
@@ -377,7 +408,7 @@ class Solver:
 
             # boundary conditions
             for j in range(a_priori_number_of_polymers - 1):
-                model.Add(
+                model.add_constraint(
                     tiebreaker_vars[-1, j] == int(True))  # start out with "tied" condition and then test first entry
             # general case
             for i in range(len(ordered_monomer_types)):
@@ -386,13 +417,13 @@ class Solver:
                     y = polymer_composition_vars[i, j + 1]
 
                     # case 1: ties only make sense if a tie was not already broken above
-                    model.AddChainedImplication(tiebreaker_vars[i, j], tiebreaker_vars[i - 1, j])
+                    model.add_implication(tiebreaker_vars[i, j], tiebreaker_vars[i - 1, j])
 
                     # case 2: try to resolve a tie, but still tied
-                    model.AddEqualToZeroImplication(tiebreaker_vars[i, j], x - y)  # x == y
+                    model.add_equal_to_zero_implication(tiebreaker_vars[i, j], x - y)  # x == y
 
                     # case 3: try to resolve a tie, and succeed
-                    model.AddGreaterThanZeroImplication(
+                    model.add_greater_than_zero_implication(
                         model.complement_var(tiebreaker_vars[i, j]),
                         tiebreaker_vars[i - 1, j],
                         x - y,  # enforce that the above conditions imply x > y
@@ -422,7 +453,7 @@ class Solver:
 
         # set big M, in case integer programming algorithm is called for instead of constraint programming
         #  this value must be at least as large as the maximum number of (tracked) monomers that can be in a polymer
-        model.set_big_M(total_number_of_monomers)
+        model.set_big_m(total_number_of_monomers)
 
         ############ Variables ############
         if formulation == SolverFormulation.BOND_AWARE_NETWORK:
@@ -435,12 +466,18 @@ class Solver:
                                 if (monomer > second_monomer) or \
                                         (monomer == second_monomer and domain_number > second_domain_number):
                                     # symmetric condition
-                                    new_variable_or_value = pair_vars[(second_monomer_number, second_domain_number), (monomer_number, domain_number)]
+                                    new_variable_or_value = pair_vars[
+                                        (second_monomer_number, second_domain_number), (monomer_number, domain_number)
+                                    ]
                                 else:
-                                    new_variable_or_value = model.bool_var(f"pair_{monomer_number}_{domain_number}_{second_monomer_number}_{second_domain_number}")
+                                    new_variable_or_value = model.bool_var(
+                                        f"pair_{monomer_number}_{domain_number}" +
+                                        f"_{second_monomer_number}_{second_domain_number}"
+                                    )
                             else:
                                 new_variable_or_value = 0
-                            pair_vars[(monomer_number, domain_number), (second_monomer_number, second_domain_number)] = new_variable_or_value
+                            pair_vars[(monomer_number, domain_number), (second_monomer_number, second_domain_number)]\
+                                = new_variable_or_value
 
         # bind_vars[i, j] = 1 if monomers i and j are bound into the same polymer, 0 else
         bind_vars = {}
@@ -458,39 +495,40 @@ class Solver:
         ############ Constraints ############
         # transitivity of binding
         for m1, m2, m3 in itertools.permutations(range(total_number_of_monomers), 3):
-            model.AddChainedImplication(bind_vars[m1, m2], bind_vars[m1, m3], bind_vars[m2, m3])
+            model.add_implication(bind_vars[m1, m2], bind_vars[m1, m3], bind_vars[m2, m3])
 
         # cannot be two representatives in the same polymer
         for i in range(total_number_of_monomers):
             for j in range(i+1, total_number_of_monomers):
-                model.AddChainedImplication(bind_vars[i, j], model.complement_var(rep_vars[j]))
+                model.add_implication(bind_vars[i, j], model.complement_var(rep_vars[j]))
 
         if formulation == SolverFormulation.BOND_AWARE_NETWORK:
             # saturation constraint: all limiting sites are paired
             for this_monomer_number, monomer in enumerate(ordered_monomers):
                 for this_domain_number, domain in enumerate(monomer.as_explicit_list()):
                     if domain in limiting_domain_types:
-                        model.Add(
-                            1 == sum(val for (((monomer_number, domain_number), (_,_)), val) in pair_vars.items()
+                        model.add_constraint(
+                            1 == sum(val for (((monomer_number, domain_number), _), val) in pair_vars.items()
                                      if this_monomer_number == monomer_number and this_domain_number == domain_number)
                         )
 
             # cannot pair more than once
             for this_monomer_number, monomer in enumerate(ordered_monomers):
                 for this_domain_number, domain in enumerate(monomer.as_explicit_list()):
-                    model.Add(
-                        1 >= sum(val for (((monomer_number, domain_number), (_,_)), val) in pair_vars.items()
+                    model.add_constraint(
+                        1 >= sum(val for (((monomer_number, domain_number), _), val) in pair_vars.items()
                                  if this_monomer_number == monomer_number and this_domain_number == domain_number)
                     )
 
             # pair implies bond
-            for ((monomer_number, domain_number), (second_monomer_number, second_domain_number)), var in pair_vars.items():
-                model.AddChainedImplication(var, bind_vars[monomer_number, second_monomer_number])
+            for ((monomer_number, domain_number), (second_monomer_number, second_domain_number)), var\
+                    in pair_vars.items():
+                model.add_implication(var, bind_vars[monomer_number, second_monomer_number])
         else:
             # saturation constraint: limiting sites must be in the minority in any polymer
             for i in range(total_number_of_monomers):
                 for domain in limiting_domain_types:
-                    model.Add(
+                    model.add_constraint(
                         sum(bind_vars[i, j] * ordered_monomers[j].net_count(domain)
                             for j in range(total_number_of_monomers)) <= 0
                     )
@@ -499,9 +537,9 @@ class Solver:
         number_of_polymers = sum(rep_vars[i] for i in range(total_number_of_monomers))
 
         if optimize:
-            model.Maximize(number_of_polymers)
+            model.maximize(number_of_polymers)
         else:
-            model.Add(number_of_polymers == a_priori_number_of_polymers)
+            model.add_constraint(number_of_polymers == a_priori_number_of_polymers)
 
         return model, ordered_monomers, bind_vars
 
@@ -517,7 +555,9 @@ class Solver:
         if formulation in [SolverFormulation.BOND_AWARE_NETWORK, SolverFormulation.BOND_OBLIVIOUS_NETWORK]:
             return self.interpret_bind_map_solution(tbn, ordered_monomer_types, polymer_composition_vars, value_dict)
         else:
-            return self.interpret_polymer_dict_solution(tbn, ordered_monomer_types, polymer_composition_vars, value_dict)
+            return self.interpret_polymer_dict_solution(
+                tbn, ordered_monomer_types, polymer_composition_vars, value_dict
+            )
 
     @staticmethod
     def interpret_bind_map_solution(
@@ -544,8 +584,8 @@ class Solver:
 
         return Configuration(this_configuration_dict)
 
+    @staticmethod
     def interpret_polymer_dict_solution(
-                self,
                 tbn: Tbn,
                 ordered_monomer_types: List[Monomer],
                 polymer_composition_vars: Dict[Tuple[int, int], Any],

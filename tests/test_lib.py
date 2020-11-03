@@ -2,6 +2,7 @@ import unittest
 import tempfile
 from source import lib
 
+
 class TestLib(unittest.TestCase):
     def setUp(self):
         test_tbn_string = "6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)"

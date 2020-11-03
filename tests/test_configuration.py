@@ -85,11 +85,17 @@ class TestConfiguration(unittest.TestCase):
             self.polymer_2x_3y,
         ]
         with self.subTest("Sums over single copies of different polymers"):
-            self.assertEqual(len(test_polymers), Configuration({polymer: 1 for polymer in test_polymers}).number_of_polymers())
+            self.assertEqual(
+                len(test_polymers),
+                Configuration({polymer: 1 for polymer in test_polymers}).number_of_polymers()
+            )
         with self.subTest("Sums over multiple copies of the same polymer(s)"):
             for i in range(1, 4):
                 for j in range(1, 4):
-                    self.assertEqual(i+j, Configuration({test_polymers[0]: i, test_polymers[1]: j}).number_of_polymers())
+                    self.assertEqual(
+                        i+j,
+                        Configuration({test_polymers[0]: i, test_polymers[1]: j}).number_of_polymers()
+                    )
         with self.subTest("Reports 'inf' if any polymer has infinite quantity"):
             self.assertEqual(
                 infinity,
@@ -114,27 +120,30 @@ class TestConfiguration(unittest.TestCase):
 
     def test_energy(self):
         # values determined by regression testing
-        monomer_A = Monomer.from_string("a a b b c d")
-        monomer_B = Monomer.from_string("a* b* c*")
-        polymer_A = Polymer({monomer_A: 1})
-        polymer_B = Polymer({monomer_B: 1})
-        polymer_AB = Polymer({monomer_A: 1, monomer_B: 1})
-        polymer_AAB = Polymer({monomer_A: 2, monomer_B: 1})
-        polymer_ABB = Polymer({monomer_A: 1, monomer_B: 2})
+        monomer_a = Monomer.from_string("a a b b c d")
+        monomer_b = Monomer.from_string("a* b* c*")
+        polymer_a = Polymer({monomer_a: 1})
+        polymer_b = Polymer({monomer_b: 1})
+        polymer_ab = Polymer({monomer_a: 1, monomer_b: 1})
+        polymer_aab = Polymer({monomer_a: 2, monomer_b: 1})
+        polymer_abb = Polymer({monomer_a: 1, monomer_b: 2})
         self.assertEqual(0.0, Configuration({}).energy(bond_weighting_factor=0.4))
-        self.assertEqual(1.0, Configuration({polymer_A: 1, polymer_AB: 1}).energy(bond_weighting_factor=0.4))
-        self.assertEqual(2.2, Configuration({polymer_A: infinity, polymer_B: 1, polymer_AB: 1}).energy(bond_weighting_factor=0.4))
-        self.assertEqual(1.8, Configuration({polymer_B: infinity, polymer_AB: 1}).energy(bond_weighting_factor=0.4))
-        self.assertEqual(4.8, Configuration({polymer_B: infinity, polymer_AAB: 1}).energy(bond_weighting_factor=0.4))
-        self.assertEqual(2.4, Configuration({polymer_A: infinity, polymer_ABB: 1}).energy(bond_weighting_factor=0.4))
+        self.assertEqual(1.0, Configuration({polymer_a: 1, polymer_ab: 1}).energy(bond_weighting_factor=0.4))
+        self.assertEqual(
+            2.2,
+            Configuration({polymer_a: infinity, polymer_b: 1, polymer_ab: 1}).energy(bond_weighting_factor=0.4)
+        )
+        self.assertEqual(1.8, Configuration({polymer_b: infinity, polymer_ab: 1}).energy(bond_weighting_factor=0.4))
+        self.assertEqual(4.8, Configuration({polymer_b: infinity, polymer_aab: 1}).energy(bond_weighting_factor=0.4))
+        self.assertEqual(2.4, Configuration({polymer_a: infinity, polymer_abb: 1}).energy(bond_weighting_factor=0.4))
 
         # case to test a fix to a bug in a specific example in which energy was misreported as 0.8 (should be 1.6)
         #  two limiting monomers with two domains each, all as singletons => 0.4(4 domains) = 1.6
-        monomer_X = Monomer.from_string("a b")
-        monomer_Y = Monomer.from_string("a* b*")
-        polymer_X = Polymer({monomer_X: 1})
-        polymer_Y = Polymer({monomer_Y: 1})
-        self.assertEqual(1.6, Configuration({polymer_X: 2, polymer_Y: infinity}).energy(bond_weighting_factor=0.4))
+        monomer_x = Monomer.from_string("a b")
+        monomer_y = Monomer.from_string("a* b*")
+        polymer_x = Polymer({monomer_x: 1})
+        polymer_y = Polymer({monomer_y: 1})
+        self.assertEqual(1.6, Configuration({polymer_x: 2, polymer_y: infinity}).energy(bond_weighting_factor=0.4))
 
     def test_flatten(self):
         self.assertEqual(

@@ -10,11 +10,11 @@ class TestPositiveMultiset(unittest.TestCase):
             PositiveMultiset(int, {1: 2, 2: 5, 3: 3}),
 
         with self.subTest("accepts infinite multisets"):
-            PositiveMultiset(str, {"a": infinity, "b": 5, "c": 3}, allow_infinity = True)
+            PositiveMultiset(str, {"a": infinity, "b": 5, "c": 3}, allow_infinity=True)
 
         with self.subTest("allow_infinity flag set to False can disallow infinite quantities"):
             with self.assertRaises(AssertionError):
-                PositiveMultiset(str, {"a": infinity, "b": 5, "c": 3}, allow_infinity = False)
+                PositiveMultiset(str, {"a": infinity, "b": 5, "c": 3}, allow_infinity=False)
 
         with self.subTest("all elements must be of the correct type"):
             with self.assertRaises(AssertionError):
