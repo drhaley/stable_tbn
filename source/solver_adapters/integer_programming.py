@@ -79,9 +79,8 @@ class IpModel(abstract.Model, pywraplp.Solver):
         self.add_constraint(consequent >= -big_m * (-delta + 1))
 
         # for p => (q => delta), change to delta + (1-p) + (1-q) >= 1.  for more antecedents, extrapolate
-        constraint = self.add_constraint(
-            delta + pywraplp.Variable(sum(self.complement_var(antecedent) for antecedent in antecedents)) >= 1
-        )
+        boolean_complement_sum: pywraplp.Variable = sum(self.complement_var(antecedent) for antecedent in antecedents)
+        constraint = self.add_constraint(delta + boolean_complement_sum >= 1)
         return constraint
 
     def add_greater_than_zero_implication(self, *args) -> Any:
@@ -101,9 +100,8 @@ class IpModel(abstract.Model, pywraplp.Solver):
         self.add_constraint(consequent >= 1 - (big_m * (-delta + 1)))
 
         # for p => (q => delta), change to delta + (1-p) + (1-q) >= 1.  for more antecedents, extrapolate
-        constraint = self.add_constraint(
-            delta + pywraplp.Variable(sum(self.complement_var(antecedent) for antecedent in antecedents)) >= 1
-        )
+        boolean_complement_sum: pywraplp.Variable = sum(self.complement_var(antecedent) for antecedent in antecedents)
+        constraint = self.add_constraint(delta + boolean_complement_sum >= 1)
         return constraint
 
     def minimize(self, *args, **kargs) -> None:

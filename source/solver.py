@@ -12,6 +12,14 @@ from source.monomer import Monomer
 from source.solver_adapters import constraint_programming, integer_programming
 from source.solver_adapters import abstract as adapter
 
+from source.formulations.abstract import Formulation as AbstractFormulation
+from source.formulations.bond_aware_network import Formulation as BondAwareNetworkFormulation
+from source.formulations.bond_oblivious_network import Formulation as BondObliviousNetworkFormulation
+from source.formulations.polymer_binary_matrix import Formulation as PolymerBinaryMatrixFormulation
+from source.formulations.polymer_integer_matrix import Formulation as PolymerIntegerMatrixFormulation
+from source.formulations.polymer_unbounded_matrix import Formulation as PolymerUnboundedMatrixFormulation
+from source.formulations.variable_bond_weight import Formulation as VariableBondWeightFormulation
+
 
 class SolverMethod(Enum):
     CONSTRAINT_PROGRAMMING = auto()
@@ -49,19 +57,24 @@ class Solver:
                       bond_weighting_factor: Optional[float] = None,
                       verbose: bool = False,
                       ) -> Configuration:
-        model, ordered_monomer_types, polymer_composition_vars = self.__build_model(
-            tbn, formulation=formulation, bond_weighting_factor=bond_weighting_factor
-        )
-        status = self.__single_solve_adapter.solve(model, list(polymer_composition_vars.values()), verbose=verbose)
-        if status == model.INFEASIBLE:
-            raise AssertionError(f"Could not find optimal solution to tbn, was reported infeasible")
-        elif status != model.OPTIMAL:
-            raise AssertionError(f"could not find optimal solution to tbn, got code {status} instead")
+        if formulation == SolverFormulation.POLYMER_UNBOUNDED_MATRIX:  # TODO: move all formulations into this clause
+            formulation = PolymerUnboundedMatrixFormulation(tbn, self.__single_solve_adapter)
+            return formulation.get_configuration(verbose=verbose)
         else:
-            value_dict = {var: self.__single_solve_adapter.value(var) for var in polymer_composition_vars.values()}
-            return self.interpret_solution(
-                tbn, ordered_monomer_types, polymer_composition_vars, value_dict, formulation=formulation
+            model, ordered_monomer_types, polymer_composition_vars = self.__build_model(
+                tbn, formulation=formulation, bond_weighting_factor=bond_weighting_factor
             )
+            status = self.__single_solve_adapter.solve(model, list(polymer_composition_vars.values()), verbose=verbose)
+
+            if status == model.INFEASIBLE:
+                raise AssertionError(f"Could not find optimal solution to tbn, was reported infeasible")
+            elif status != model.OPTIMAL:
+                raise AssertionError(f"could not find optimal solution to tbn, got code {status} instead")
+            else:
+                value_dict = {var: self.__single_solve_adapter.value(var) for var in polymer_composition_vars.values()}
+                return self.interpret_solution(
+                    tbn, ordered_monomer_types, polymer_composition_vars, value_dict, formulation=formulation
+                )
 
     def stable_configs(self,
                        tbn: Tbn,
