@@ -1,38 +1,14 @@
-from typing import Iterator, List, Any, Dict
+from typing import List, Tuple
 
-from source.formulations.abstract import Formulation as AbstractFormulation
-from source.tbn import Tbn
-from source.configuration import Configuration
-from source.constraints import Constraints
+from source.monomer import Monomer
+from source.formulations.polymer_integer_matrix import Formulation as IntegerFormulation
 
 
-class Formulation(AbstractFormulation):
-    def _populate_model(self) -> None:
-        """
-        populates self.model with the variables and constraints needed to solve a formulation
-        """
-        self._add_variables()
-        self._add_constraints()
+class Formulation(IntegerFormulation):
+    def _get_monomer_types_and_counts(self) -> Tuple[List[Monomer], List[int]]:
+        ordered_monomer_types = list(self.tbn.monomer_types(flatten=True))
+        monomer_counts = [1 for _ in ordered_monomer_types]
+        return ordered_monomer_types, monomer_counts
 
-    def _add_variables(self) -> None:
-        pass
-        # self.model.bool_var()
-        # self.model.int_var()
-
-    def _add_constraints(self) -> None:
-        pass
-        # self.model.add_constraint()
-
-    def _variables_to_keep(self) -> List[Any]:
-        """
-        returns a list of the variables that are necessary to convert a solution back to a configuration
-          (e.g. returns polymer composition variables but not 'internal' tie-breaker variables)
-        """
-        pass
-
-    def _interpret_solution(self, variable_to_value_dictionary: Dict[Any, int]) -> Configuration:
-        """
-        uses the provided dictionary to convert solution variables into solution values and from this,
-          converts the solutions values into the corresponding configuration
-        """
-        pass
+    def _run_asserts(self) -> None:
+        super()._run_asserts()

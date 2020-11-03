@@ -1,11 +1,10 @@
-from typing import Iterator, List, Any, Dict
+from typing import List, Tuple, Dict, Any
 from math import inf as infinity
 
 from source.formulations.abstract import Formulation as AbstractFormulation
-from source.tbn import Tbn
+from source.monomer import Monomer
 from source.polymer import Polymer
 from source.configuration import Configuration
-from source.constraints import Constraints
 
 
 class Formulation(AbstractFormulation):
@@ -14,20 +13,20 @@ class Formulation(AbstractFormulation):
         populates self.model with the variables and constraints needed to solve a formulation
         """
         self._construct_lists_and_calculate_constants()
+        self._run_asserts()
         self._add_variables()
         self._add_constraints()
         self._add_sorting_constraints()
         self._apply_objective_function()
 
     def _construct_lists_and_calculate_constants(self) -> None:
-        self.ordered_monomer_types = list(self.tbn.monomer_types())
-        self.monomer_counts = [self.tbn.count(monomer) for monomer in self.ordered_monomer_types]
+        self.ordered_monomer_types, self.monomer_counts = self._get_monomer_types_and_counts()
         self.total_number_of_monomers = sum(
             self.tbn.count(monomer_type)
             for monomer_type in self.ordered_monomer_types
         )
         self.limiting_domain_types = list(self.tbn.limiting_domain_types())
-        self.limiting_monomer_types = list(self.tbn.limiting_monomer_types())
+        self.limiting_monomer_types = self._get_limiting_monomer_types()
         self.total_number_of_limiting_monomers = sum(
             self.tbn.count(monomer_type)
             for monomer_type in self.limiting_monomer_types
@@ -66,7 +65,6 @@ class Formulation(AbstractFormulation):
 
     def _add_constraints(self) -> None:
         # monomer conservation; must use all limiting monomers, and cannot exceed the count of other monomers
-        # if not using BEYOND_MULTISET_FORMULATION or LOW_W_FORMULATION, all monomers must be used in exact counts
         for i, monomer in enumerate(self.ordered_monomer_types):
             if monomer in self.limiting_monomer_types:
                 self.model.add_constraint(
@@ -186,6 +184,13 @@ class Formulation(AbstractFormulation):
 
         return Configuration(this_configuration_dict)
 
+    def _run_asserts(self) -> None:
+        pass
 
+    def _get_monomer_types_and_counts(self) -> Tuple[List[Monomer], List[int]]:
+        ordered_monomer_types = list(self.tbn.monomer_types())
+        monomer_counts = [self.tbn.count(monomer) for monomer in ordered_monomer_types]
+        return ordered_monomer_types, monomer_counts
 
-
+    def _get_limiting_monomer_types(self) -> List[Monomer]:
+        return list(self.tbn.limiting_monomer_types())

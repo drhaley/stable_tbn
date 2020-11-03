@@ -57,10 +57,16 @@ class Solver:
                       bond_weighting_factor: Optional[float] = None,
                       verbose: bool = False,
                       ) -> Configuration:
-        if formulation == SolverFormulation.POLYMER_UNBOUNDED_MATRIX:  # TODO: move all formulations into this clause
+        if formulation == SolverFormulation.POLYMER_BINARY_MATRIX:
+            formulation = PolymerBinaryMatrixFormulation(tbn, self.__single_solve_adapter)
+            return formulation.get_configuration(verbose=verbose)
+        elif formulation == SolverFormulation.POLYMER_INTEGER_MATRIX:
+            formulation = PolymerIntegerMatrixFormulation(tbn, self.__single_solve_adapter)
+            return formulation.get_configuration(verbose=verbose)
+        elif formulation == SolverFormulation.POLYMER_UNBOUNDED_MATRIX:
             formulation = PolymerUnboundedMatrixFormulation(tbn, self.__single_solve_adapter)
             return formulation.get_configuration(verbose=verbose)
-        else:
+        else: # TODO: move all formulations into above clauses
             model, ordered_monomer_types, polymer_composition_vars = self.__build_model(
                 tbn, formulation=formulation, bond_weighting_factor=bond_weighting_factor
             )
