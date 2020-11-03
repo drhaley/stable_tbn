@@ -19,12 +19,12 @@ class SolverMethod(Enum):
 
 
 class SolverFormulation(Enum):
-    STABLEGEN_FORMULATION = auto()
-    BOND_OBLIVIOUS_FORMULATION = auto()
-    SET_FORMULATION = auto()
-    MULTISET_FORMULATION = auto()
-    BEYOND_MULTISET_FORMULATION = auto()
-    LOW_W_FORMULATION = auto()
+    BOND_AWARE_NETWORK = auto()
+    BOND_OBLIVIOUS_NETWORK = auto()
+    POLYMER_BINARY_MATRIX = auto()
+    POLYMER_INTEGER_MATRIX = auto()
+    POLYMER_UNBOUNDED_MATRIX = auto()
+    VARIABLE_BOND_WEIGHT = auto()
 
 
 class Solver:
@@ -45,7 +45,7 @@ class Solver:
 
     def stable_config(self,
                       tbn: Tbn,
-                      formulation: SolverFormulation = SolverFormulation.BEYOND_MULTISET_FORMULATION,
+                      formulation: SolverFormulation = SolverFormulation.POLYMER_UNBOUNDED_MATRIX,
                       bond_weighting_factor: Optional[float] = None,
                       verbose: bool = False,
                       ) -> Configuration:
@@ -63,17 +63,17 @@ class Solver:
 
     def stable_configs(self,
                        tbn: Tbn,
-                       formulation: SolverFormulation = SolverFormulation.BEYOND_MULTISET_FORMULATION,
+                       formulation: SolverFormulation = SolverFormulation.POLYMER_UNBOUNDED_MATRIX,
                        bond_weighting_factor: Optional[float] = None,
                        verbose: bool = False,
                        ) -> Iterator[Configuration]:
         example_stable_configuration = self.stable_config(
             tbn, formulation=formulation, bond_weighting_factor=bond_weighting_factor, verbose=verbose,
         )
-        if formulation == SolverFormulation.LOW_W_FORMULATION:
+        if formulation == SolverFormulation.VARIABLE_BOND_WEIGHT:
             max_energy = example_stable_configuration.energy(bond_weighting_factor)
             return self.configs_with_energy(tbn, formulation=formulation, max_energy=max_energy, bond_weighting_factor=bond_weighting_factor, verbose=verbose)
-        elif formulation == SolverFormulation.BEYOND_MULTISET_FORMULATION:
+        elif formulation == SolverFormulation.POLYMER_UNBOUNDED_MATRIX:
             number_of_merges = example_stable_configuration.number_of_merges()
             return self.configs_with_number_of_merges(tbn, formulation=formulation, number_of_merges=number_of_merges, verbose=verbose)
         else:
@@ -94,7 +94,7 @@ class Solver:
             raise AssertionError(
                 "cannot request a specific number of polymers when there are an infinite amount of monomers"
             )
-        if formulation in [SolverFormulation.BEYOND_MULTISET_FORMULATION, SolverFormulation.LOW_W_FORMULATION]:
+        if formulation in [SolverFormulation.POLYMER_UNBOUNDED_MATRIX, SolverFormulation.VARIABLE_BOND_WEIGHT]:
             raise AssertionError("to specify a specific number of polymers with this formulation, " +
                                  "must input an appropriate constraint file")
 
@@ -182,17 +182,17 @@ class Solver:
 
         # StableGen formulation is qualitatively different, so factored that code out.  Some code is shared, but
         #  seems more straightforward at this point to isolate them
-        if formulation in [SolverFormulation.STABLEGEN_FORMULATION, SolverFormulation.BOND_OBLIVIOUS_FORMULATION]:
+        if formulation in [SolverFormulation.BOND_AWARE_NETWORK, SolverFormulation.BOND_OBLIVIOUS_NETWORK]:
             return self.__build_stablegen_model(tbn, formulation, a_priori_number_of_polymers)
 
-        if formulation == SolverFormulation.LOW_W_FORMULATION:
+        if formulation == SolverFormulation.VARIABLE_BOND_WEIGHT:
             if bond_weighting_factor is None or bond_weighting_factor <= 0.0:
                 raise AssertionError("For low-W formulation, must supply positive bond weighting factor.")
             if max_energy is None:
                 optimize = True
             else:
                 optimize = False
-        elif formulation == SolverFormulation.BEYOND_MULTISET_FORMULATION:
+        elif formulation == SolverFormulation.POLYMER_UNBOUNDED_MATRIX:
             if max_number_of_merges is None:
                 optimize = True
             else:
@@ -208,7 +208,7 @@ class Solver:
         else:
             model = self.__multi_solve_adapter.model()
 
-        if formulation == SolverFormulation.SET_FORMULATION:
+        if formulation == SolverFormulation.POLYMER_BINARY_MATRIX:
             ordered_monomer_types = list(tbn.monomer_types(flatten=True))
             monomer_counts = [1 for _ in ordered_monomer_types]
         else:
@@ -241,13 +241,13 @@ class Solver:
 
         # set big M, in case integer programming algorithm is called for instead of constraint programming
         #  this value must be at least as large as the maximum number of (tracked) monomers that can be in a polymer
-        if formulation in {SolverFormulation.BEYOND_MULTISET_FORMULATION, SolverFormulation.LOW_W_FORMULATION}:
+        if formulation in {SolverFormulation.POLYMER_UNBOUNDED_MATRIX, SolverFormulation.VARIABLE_BOND_WEIGHT}:
             model.set_big_M(upper_bound_on_total_monomers_in_complexes)
         else:
             model.set_big_M(total_number_of_monomers)
 
         if a_priori_number_of_polymers is None:
-            if formulation in {SolverFormulation.BEYOND_MULTISET_FORMULATION, SolverFormulation.LOW_W_FORMULATION}:
+            if formulation in {SolverFormulation.POLYMER_UNBOUNDED_MATRIX, SolverFormulation.VARIABLE_BOND_WEIGHT}:
                 a_priori_number_of_polymers = total_number_of_limiting_monomers
             else:
                 a_priori_number_of_polymers = total_number_of_monomers
@@ -269,7 +269,7 @@ class Solver:
             indicator_vars[j] = model.bool_var(f'indicator_{j}')
 
         # additional variables for low-W formulations which tracks number of unbound sites
-        if formulation == SolverFormulation.LOW_W_FORMULATION:
+        if formulation == SolverFormulation.VARIABLE_BOND_WEIGHT:
             bond_deficit_vars = {}
             for domain in limiting_domain_types:
                 total_count_of_limiting_site = sum(
@@ -287,7 +287,7 @@ class Solver:
         # monomer conservation; must use all limiting monomers, and cannot exceed the count of other monomers
         # if not using BEYOND_MULTISET_FORMULATION or LOW_W_FORMULATION, all monomers must be used in exact counts
         for i, monomer in enumerate(ordered_monomer_types):
-            if (formulation not in [SolverFormulation.BEYOND_MULTISET_FORMULATION, SolverFormulation.LOW_W_FORMULATION])\
+            if (formulation not in [SolverFormulation.POLYMER_UNBOUNDED_MATRIX, SolverFormulation.VARIABLE_BOND_WEIGHT])\
                     or (monomer in limiting_monomer_types):
                 model.Add(
                     sum(
@@ -306,7 +306,7 @@ class Solver:
         # must saturate the limiting domains in each polymer
         for domain in limiting_domain_types:
             for j in range(a_priori_number_of_polymers):
-                if formulation != SolverFormulation.LOW_W_FORMULATION:
+                if formulation != SolverFormulation.VARIABLE_BOND_WEIGHT:
                     deficit = 0
                 else:
                     deficit = bond_deficit_vars[domain, j]
@@ -323,7 +323,7 @@ class Solver:
         #  to prevent the algorithm for producing "optimal" configurations in which
         #  superfluous singletons are made explicit, which results in many isomorphic solutions
         for j in range(a_priori_number_of_polymers):
-            if formulation in {SolverFormulation.BEYOND_MULTISET_FORMULATION, SolverFormulation.LOW_W_FORMULATION}:
+            if formulation in {SolverFormulation.POLYMER_UNBOUNDED_MATRIX, SolverFormulation.VARIABLE_BOND_WEIGHT}:
                 model.Add(indicator_vars[j] <=
                           sum(polymer_composition_vars[i, j]
                               for i, monomer in enumerate(ordered_monomer_types) if monomer in limiting_monomer_types))
@@ -341,7 +341,7 @@ class Solver:
         number_of_polymers = sum(indicator_vars[j] for j in range(a_priori_number_of_polymers))
         number_of_merges = total_number_of_monomers_used - number_of_polymers
 
-        if formulation == SolverFormulation.LOW_W_FORMULATION:
+        if formulation == SolverFormulation.VARIABLE_BOND_WEIGHT:
             total_bond_deficit = sum(
                 bond_deficit_vars[domain, j]
                     for domain in limiting_domain_types
@@ -356,7 +356,7 @@ class Solver:
                 model.Minimize(energy)
             else:
                 model.Add(energy <= ceil(SCALING_FACTOR * max_energy))
-        elif formulation == SolverFormulation.BEYOND_MULTISET_FORMULATION:
+        elif formulation == SolverFormulation.POLYMER_UNBOUNDED_MATRIX:
             if optimize:
                 model.Minimize(number_of_merges)
             else:
@@ -425,7 +425,7 @@ class Solver:
         model.set_big_M(total_number_of_monomers)
 
         ############ Variables ############
-        if formulation == SolverFormulation.STABLEGEN_FORMULATION:
+        if formulation == SolverFormulation.BOND_AWARE_NETWORK:
             pair_vars = {}
             for monomer_number, monomer in enumerate(ordered_monomers):
                 for domain_number, domain_type in enumerate(monomer.as_explicit_list()):
@@ -465,7 +465,7 @@ class Solver:
             for j in range(i+1, total_number_of_monomers):
                 model.AddChainedImplication(bind_vars[i, j], model.complement_var(rep_vars[j]))
 
-        if formulation == SolverFormulation.STABLEGEN_FORMULATION:
+        if formulation == SolverFormulation.BOND_AWARE_NETWORK:
             # saturation constraint: all limiting sites are paired
             for this_monomer_number, monomer in enumerate(ordered_monomers):
                 for this_domain_number, domain in enumerate(monomer.as_explicit_list()):
@@ -514,7 +514,7 @@ class Solver:
                 formulation: SolverFormulation,
             ) -> Configuration:
 
-        if formulation in [SolverFormulation.STABLEGEN_FORMULATION, SolverFormulation.BOND_OBLIVIOUS_FORMULATION]:
+        if formulation in [SolverFormulation.BOND_AWARE_NETWORK, SolverFormulation.BOND_OBLIVIOUS_NETWORK]:
             return self.interpret_bind_map_solution(tbn, ordered_monomer_types, polymer_composition_vars, value_dict)
         else:
             return self.interpret_polymer_dict_solution(tbn, ordered_monomer_types, polymer_composition_vars, value_dict)

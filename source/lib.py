@@ -9,7 +9,7 @@ def get_stable_configs(
         tbn_filename: str,
         constraint_filename: Optional[str] = None,
         solver_method: SolverMethod = SolverMethod.CONSTRAINT_PROGRAMMING,
-        formulation: SolverFormulation = SolverFormulation.BEYOND_MULTISET_FORMULATION,
+        formulation: SolverFormulation = SolverFormulation.POLYMER_UNBOUNDED_MATRIX,
         bond_weighting_factor: Optional[float] = None,
         verbose: bool = False,
     ) -> Iterator[Configuration]:
@@ -28,7 +28,7 @@ def get_stable_config(
         tbn_filename: str,
         constraint_filename: Optional[str] = None,
         solver_method: SolverMethod = SolverMethod.CONSTRAINT_PROGRAMMING,
-        formulation: SolverFormulation = SolverFormulation.BEYOND_MULTISET_FORMULATION,
+        formulation: SolverFormulation = SolverFormulation.POLYMER_UNBOUNDED_MATRIX,
         bond_weighting_factor: Optional[float] = None,
         verbose: bool = False,
     ) -> Configuration:

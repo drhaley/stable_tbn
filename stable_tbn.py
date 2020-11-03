@@ -3,13 +3,6 @@ import timeit
 from source.solver import SolverMethod, SolverFormulation
 from source import lib
 
-alternate_formulations = [
-    "STABLEGEN",
-    "BOND_OBLIVIOUS",
-    "SET",
-    "MULTISET",
-]
-
 
 def main() -> None:
     args = get_command_line_arguments()
@@ -26,12 +19,12 @@ def main() -> None:
             else:
                 raise AssertionError(f"Did not recognize alternate formulation method requested '{args.formulation}'")
         else:
-            formulation = SolverFormulation.BEYOND_MULTISET_FORMULATION
+            formulation = SolverFormulation.POLYMER_UNBOUNDED_MATRIX
         bond_weighting_factor = None
     else:
         if args.formulation is not None:
             print("alternate method requested but bond weight was specified, falling back to LOW_W_FORMULATION")
-        formulation = SolverFormulation.LOW_W_FORMULATION
+        formulation = SolverFormulation.VARIABLE_BOND_WEIGHT
         bond_weighting_factor = float(args.weight)
 
     if not args.single:
@@ -115,7 +108,7 @@ def get_command_line_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--formulation",
         type=str,
-        help=f"specify an alternate solution formulation, one of:\n{', '.join(alternate_formulations)}",
+        help=f"specify a specific solution formulation, one of:\n{', '.join(SolverFormulation.__members__)}",
     )
     parser.add_argument(
         "-v",

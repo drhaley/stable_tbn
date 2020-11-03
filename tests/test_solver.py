@@ -12,57 +12,57 @@ class TestSolver(unittest.TestCase):
 
     def test_stable_config(self):
         test_cases = [
-            ("a* b* \n a b \n a* \n b*", 3, 1, self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),
-            ("a* b* \n a b \n a* \n b*", 3, 1, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
-            ("a* b* \n a b \n a* \n b*", 3, 1, self.cp_solver, SolverFormulation.SET_FORMULATION),
-            ("a* b* \n a b \n a* \n b*", 3, 1, self.cp_solver, SolverFormulation.MULTISET_FORMULATION),
-            ("a* b* \n a b \n a* \n b*", 3, 1, self.cp_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
-            ("a* b* \n a b \n a* \n b*", 3, 1, self.cp_solver, SolverFormulation.LOW_W_FORMULATION),
+            ("a* b* \n a b \n a* \n b*", 3, 1, self.cp_solver, SolverFormulation.BOND_AWARE_NETWORK),
+            ("a* b* \n a b \n a* \n b*", 3, 1, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
+            ("a* b* \n a b \n a* \n b*", 3, 1, self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
+            ("a* b* \n a b \n a* \n b*", 3, 1, self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
+            ("a* b* \n a b \n a* \n b*", 3, 1, self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
+            ("a* b* \n a b \n a* \n b*", 3, 1, self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
 
-            ("a* b* \n a b \n a* \n b*", 3, 1, self.ip_solver, SolverFormulation.STABLEGEN_FORMULATION),
-            ("a* b* \n a b \n a* \n b*", 3, 1, self.ip_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
-            ("a* b* \n a b \n a* \n b*", 3, 1, self.ip_solver, SolverFormulation.SET_FORMULATION),
-            ("a* b* \n a b \n a* \n b*", 3, 1, self.ip_solver, SolverFormulation.MULTISET_FORMULATION),
-            ("a* b* \n a b \n a* \n b*", 3, 1, self.ip_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
-            ("a* b* \n a b \n a* \n b*", 3, 1, self.ip_solver, SolverFormulation.LOW_W_FORMULATION),
+            ("a* b* \n a b \n a* \n b*", 3, 1, self.ip_solver, SolverFormulation.BOND_AWARE_NETWORK),
+            ("a* b* \n a b \n a* \n b*", 3, 1, self.ip_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
+            ("a* b* \n a b \n a* \n b*", 3, 1, self.ip_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
+            ("a* b* \n a b \n a* \n b*", 3, 1, self.ip_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
+            ("a* b* \n a b \n a* \n b*", 3, 1, self.ip_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
+            ("a* b* \n a b \n a* \n b*", 3, 1, self.ip_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
 
-            ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),
-            ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
-            ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.SET_FORMULATION),
-            ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.MULTISET_FORMULATION),
-            ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
-            ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.LOW_W_FORMULATION),
+            ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.BOND_AWARE_NETWORK),
+            ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
+            ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
+            ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
+            ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
+            ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
 
-            ("2[a* b*] \n a b", 2, 1, self.ip_solver, SolverFormulation.STABLEGEN_FORMULATION),
-            ("2[a* b*] \n a b", 2, 1, self.ip_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
-            ("2[a* b*] \n a b", 2, 1, self.ip_solver, SolverFormulation.SET_FORMULATION),
-            ("2[a* b*] \n a b", 2, 1, self.ip_solver, SolverFormulation.MULTISET_FORMULATION),
-            ("2[a* b*] \n a b", 2, 1, self.ip_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
-            ("2[a* b*] \n a b", 2, 1, self.ip_solver, SolverFormulation.LOW_W_FORMULATION),
+            ("2[a* b*] \n a b", 2, 1, self.ip_solver, SolverFormulation.BOND_AWARE_NETWORK),
+            ("2[a* b*] \n a b", 2, 1, self.ip_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
+            ("2[a* b*] \n a b", 2, 1, self.ip_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
+            ("2[a* b*] \n a b", 2, 1, self.ip_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
+            ("2[a* b*] \n a b", 2, 1, self.ip_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
+            ("2[a* b*] \n a b", 2, 1, self.ip_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
 
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.SET_FORMULATION),
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.MULTISET_FORMULATION),
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.LOW_W_FORMULATION),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
 
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.SET_FORMULATION),
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.MULTISET_FORMULATION),
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.LOW_W_FORMULATION),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
 
-            ("inf[a* b*] \n 2[a b]", infinity, 2, self.cp_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
-            ("inf[a* b*] \n 2[a b]", infinity, 2, self.cp_solver, SolverFormulation.LOW_W_FORMULATION),
+            ("inf[a* b*] \n 2[a b]", infinity, 2, self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
+            ("inf[a* b*] \n 2[a b]", infinity, 2, self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
 
-            ("inf[a* b*] \n 2[a b]", infinity, 2, self.ip_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
-            ("inf[a* b*] \n 2[a b]", infinity, 2, self.ip_solver, SolverFormulation.LOW_W_FORMULATION),
+            ("inf[a* b*] \n 2[a b]", infinity, 2, self.ip_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
+            ("inf[a* b*] \n 2[a b]", infinity, 2, self.ip_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
 
-            ("inf[2(a*) 2(b*)] \n 2[3(a) 3(b)]", infinity, 4, self.cp_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
-            ("inf[2(a*) 2(b*)] \n 2[3(a) 3(b)]", infinity, 4, self.cp_solver, SolverFormulation.LOW_W_FORMULATION),
+            ("inf[2(a*) 2(b*)] \n 2[3(a) 3(b)]", infinity, 4, self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
+            ("inf[2(a*) 2(b*)] \n 2[3(a) 3(b)]", infinity, 4, self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
 
-            ("inf[2(a*) 2(b*)] \n 2[3(a) 3(b)]", infinity, 4, self.ip_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
-            ("inf[2(a*) 2(b*)] \n 2[3(a) 3(b)]", infinity, 4, self.ip_solver, SolverFormulation.LOW_W_FORMULATION),
+            ("inf[2(a*) 2(b*)] \n 2[3(a) 3(b)]", infinity, 4, self.ip_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
+            ("inf[2(a*) 2(b*)] \n 2[3(a) 3(b)]", infinity, 4, self.ip_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
         ]
         for tbn_string, number_of_polymers, number_of_merges, solver, formulation in test_cases:
             with self.subTest(tbn_string=tbn_string, solver=solver, formulation=formulation):
@@ -102,45 +102,45 @@ class TestSolver(unittest.TestCase):
             with self.subTest("low w tests", tbn_string=tbn_string, solver=solver, weight=weight):
                 test_tbn = Tbn.from_string(tbn_string)
                 configuration = solver.stable_config(
-                    test_tbn, formulation=SolverFormulation.LOW_W_FORMULATION, bond_weighting_factor=weight,
+                    test_tbn, formulation=SolverFormulation.VARIABLE_BOND_WEIGHT, bond_weighting_factor=weight,
                 )
                 self.assertEqual(number_of_polymers, configuration.number_of_polymers())
                 self.assertEqual(number_of_merges, configuration.number_of_merges())
 
     def test_stable_configs(self):
         test_cases = [
-            ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),
-            ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
-            ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.SET_FORMULATION),
-            ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.MULTISET_FORMULATION),
-            ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
-            ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.LOW_W_FORMULATION),
+            ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.BOND_AWARE_NETWORK),
+            ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
+            ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
+            ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
+            ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
+            ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
 
-            ("a a \n a* a*", 2, 1, self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),
-            ("a a \n a* a*", 1, 1, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
-            ("a a \n a* a*", 1, 1, self.cp_solver, SolverFormulation.SET_FORMULATION),
-            ("a a \n a* a*", 1, 1, self.cp_solver, SolverFormulation.MULTISET_FORMULATION),
-            ("a a \n a* a*", 1, 1, self.cp_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
-            ("a a \n a* a*", 1, 1, self.cp_solver, SolverFormulation.LOW_W_FORMULATION),
+            ("a a \n a* a*", 2, 1, self.cp_solver, SolverFormulation.BOND_AWARE_NETWORK),
+            ("a a \n a* a*", 1, 1, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
+            ("a a \n a* a*", 1, 1, self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
+            ("a a \n a* a*", 1, 1, self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
+            ("a a \n a* a*", 1, 1, self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
+            ("a a \n a* a*", 1, 1, self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
 
-            ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),
-            ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
-            ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.SET_FORMULATION),
-            ("2[a* b*] \n a b", 1, 1, self.cp_solver, SolverFormulation.MULTISET_FORMULATION),
-            ("2[a* b*] \n a b", 1, 1, self.cp_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
-            ("2[a* b*] \n a b", 1, 1, self.cp_solver, SolverFormulation.LOW_W_FORMULATION),
+            ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.BOND_AWARE_NETWORK),
+            ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
+            ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
+            ("2[a* b*] \n a b", 1, 1, self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
+            ("2[a* b*] \n a b", 1, 1, self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
+            ("2[a* b*] \n a b", 1, 1, self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
 
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 4, 5, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 4, 5, self.cp_solver, SolverFormulation.SET_FORMULATION),
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 3, 5, self.cp_solver, SolverFormulation.MULTISET_FORMULATION),
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 3, 5, self.cp_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 3, 5, self.cp_solver, SolverFormulation.LOW_W_FORMULATION),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 4, 5, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 4, 5, self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 3, 5, self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 3, 5, self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 3, 5, self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
 
-            ("inf[a* b*] \n 2[a b]", 1, 2, self.cp_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
-            ("inf[a* b*] \n 2[a b]", 1, 2, self.cp_solver, SolverFormulation.LOW_W_FORMULATION),
+            ("inf[a* b*] \n 2[a b]", 1, 2, self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
+            ("inf[a* b*] \n 2[a b]", 1, 2, self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
 
-            ("inf[2(a*) 2(b*)] \n 2[3(a) 3(b)]", 2, 4, self.cp_solver, SolverFormulation.BEYOND_MULTISET_FORMULATION),
-            ("inf[2(a*) 2(b*)] \n 2[3(a) 3(b)]", 2, 4, self.cp_solver, SolverFormulation.LOW_W_FORMULATION),
+            ("inf[2(a*) 2(b*)] \n 2[3(a) 3(b)]", 2, 4, self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
+            ("inf[2(a*) 2(b*)] \n 2[3(a) 3(b)]", 2, 4, self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
         ]
         for tbn_string, number_of_configs, number_of_merges, solver, formulation in test_cases:
             with self.subTest(tbn_string=tbn_string, solver=solver, formulation=formulation):
@@ -171,7 +171,7 @@ class TestSolver(unittest.TestCase):
             with self.subTest("low w tests", tbn_string=tbn_string, solver=solver, weight=weight):
                 test_tbn = Tbn.from_string(tbn_string)
                 configurations = solver.stable_configs(
-                    test_tbn, formulation=SolverFormulation.LOW_W_FORMULATION, bond_weighting_factor=weight,
+                    test_tbn, formulation=SolverFormulation.VARIABLE_BOND_WEIGHT, bond_weighting_factor=weight,
                 )
                 self.assertEqual(number_of_configs, len(configurations))
                 for configuration in configurations:
@@ -183,19 +183,19 @@ class TestSolver(unittest.TestCase):
             #  e.g. [a,b,c,d] => 'a' configurations with 1 polymer, 'b' configurations with 2 polymers, etc., up to 4
 
             #("a* b* \n a b \n a* \n b*", [12, 7, 1, 0], self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),
-            ("a* b* \n a b \n a* \n b*", [12, 7, 1, 0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
-            ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.SET_FORMULATION),
-            ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.MULTISET_FORMULATION),
+            ("a* b* \n a b \n a* \n b*", [12, 7, 1, 0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
+            ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
+            ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
 
             #("2[a* b*] \n a b", [ 5, 2, 0, 0], self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),
-            ("2[a* b*] \n a b", [ 5, 2, 0, 0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
-            ("2[a* b*] \n a b", [ 1, 2, 0, 0], self.cp_solver, SolverFormulation.SET_FORMULATION),
-            ("2[a* b*] \n a b", [ 1, 1, 0, 0], self.cp_solver, SolverFormulation.MULTISET_FORMULATION),
+            ("2[a* b*] \n a b", [ 5, 2, 0, 0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
+            ("2[a* b*] \n a b", [ 1, 2, 0, 0], self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
+            ("2[a* b*] \n a b", [ 1, 1, 0, 0], self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
 
             #("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [9,4,0,0], self.cp_solver, SolverFormulation.STABLEGEN_FORMULATION),
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [9,4,0,0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_FORMULATION),
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [1,4,0,0], self.cp_solver, SolverFormulation.SET_FORMULATION),
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [1,3,0,0], self.cp_solver, SolverFormulation.MULTISET_FORMULATION),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [9,4,0,0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [1,4,0,0], self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [1,3,0,0], self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
         ]
         for tbn_string, number_of_configs_with_polymer_count, solver, formulation in test_cases:
             with self.subTest(tbn_string=tbn_string, solver=solver, formulation=formulation):
