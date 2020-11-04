@@ -54,7 +54,5 @@ class Formulation(UnboundedFormulation):
         self.model.minimize(self.scaled_energy)
 
     def _run_asserts(self) -> None:
-        super()._run_asserts()
-
         if self.user_constraints.bond_weight() is None or self.user_constraints.bond_weight() <= 0.0:
             raise AssertionError("For low-W formulation, must supply positive bond weighting factor.")

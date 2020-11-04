@@ -103,4 +103,19 @@ class Formulation(AbstractFormulation):
         return Configuration(this_configuration_dict)
 
     def _run_asserts(self) -> None:
-        pass
+        if self.user_constraints.max_merges() != infinity:
+            raise NotImplementedError(
+                f"Not implemented to use this formulation with max merges: {self.user_constraints.max_merges()}"
+            )
+        if self.user_constraints.min_merges() != 0:
+            raise NotImplementedError(
+                f"Not implemented to use this formulation with min merges: {self.user_constraints.min_merges()}"
+            )
+        if self.user_constraints.max_energy() != infinity:
+            raise NotImplementedError(
+                f"Not implemented to use this formulation with max energy: {self.user_constraints.max_energy()}"
+            )
+        if self.user_constraints.min_energy() != -infinity:
+            raise NotImplementedError(
+                f"Not implemented to use this formulation with min energy: {self.user_constraints.min_energy()}"
+            )

@@ -202,9 +202,6 @@ class Formulation(AbstractFormulation):
 
         return Configuration(this_configuration_dict)
 
-    def _run_asserts(self) -> None:
-        pass
-
     def _get_monomer_types_and_counts(self) -> Tuple[List[Monomer], List[int]]:
         ordered_monomer_types = list(self.tbn.monomer_types())
         monomer_counts = [self.tbn.count(monomer) for monomer in ordered_monomer_types]
@@ -212,3 +209,13 @@ class Formulation(AbstractFormulation):
 
     def _get_limiting_monomer_types(self) -> List[Monomer]:
         return list(self.tbn.limiting_monomer_types())
+
+    def _run_asserts(self) -> None:
+        if self.user_constraints.max_energy() != infinity:
+            raise NotImplementedError(
+                f"Not implemented to use this formulation with max energy: {self.user_constraints.max_energy()}"
+            )
+        if self.user_constraints.min_energy() != -infinity:
+            raise NotImplementedError(
+                f"Not implemented to use this formulation with min energy: {self.user_constraints.min_energy()}"
+            )
