@@ -30,7 +30,7 @@ def main() -> None:
     if not args.single:
         stable_configurations = lib.get_stable_configs(
             tbn_filename=args.tbn_filename,
-            constraint_filename=args.constraint_filename,
+            constraints_filename=args.constraints_filename,
             solver_method=SolverMethod.INTEGER_PROGRAMMING if args.ip else SolverMethod.CONSTRAINT_PROGRAMMING,
             formulation=formulation,
             bond_weighting_factor=bond_weighting_factor,
@@ -44,7 +44,7 @@ def main() -> None:
     else:
         stable_configuration = lib.get_stable_config(
             tbn_filename=args.tbn_filename,
-            constraint_filename=args.constraint_filename,
+            constraints_filename=args.constraints_filename,
             solver_method=SolverMethod.INTEGER_PROGRAMMING if args.ip else SolverMethod.CONSTRAINT_PROGRAMMING,
             formulation=formulation,
             bond_weighting_factor=bond_weighting_factor,
@@ -100,10 +100,10 @@ def get_command_line_arguments() -> argparse.Namespace:
     )
     parser.add_argument(
         "-c",
-        dest="constraint_filename",
-        metavar="constraint_filename",
+        dest="constraints_filename",
+        metavar="constraints_filename",
         type=str,
-        help="filename for constraint text file",
+        help="filename for constraints text file",
     )
     parser.add_argument(
         "--formulation",

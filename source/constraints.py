@@ -1,4 +1,7 @@
+import re
 from math import inf as infinity
+from copy import copy
+
 
 class Constraints:
     """
@@ -24,22 +27,75 @@ class Constraints:
         return this_constraints
 
     def add_new_constraint_from_string(self, line: str) -> None:
-        pass  # TODO: make a syntax
+        # TODO: refactor the boiler plate switch structure
+        line = line.upper()
 
-    def set_fixed_polymers(self, number_of_polymers: int):
-        self._max_polymers = number_of_polymers
-        self._min_polymers = number_of_polymers
+        floating_point_regex = r"[+-]?(?:[0-9]*[.])?[0-9]+"
+        non_negative_integer_regex = r"[0-9]+"
 
-    def set_fixed_merges(self, number_of_merges: int):
-        self._max_merges = number_of_merges
-        self._min_merges = number_of_merges
+        if re.match("OPTIMIZE", line):
+            self._optimize = True
+        elif re.match("NO\\s+OPTIMIZE", line):
+            self._optimize = False
+        elif re.match("SORT", line):
+            self._sort = True
+        elif re.match("NO\\s+SORT", line):
+            self._sort = False
+        elif re.match("OPTIMIZE", line):
+            self._optimize = True
+        elif re.match("NO\\s+OPTIMIZE", line):
+            self._optimize = False
+        else:
+            still_searching = True
+            search_results = re.match(f"MAX ENERGY ({floating_point_regex})", line)
+            if still_searching and search_results:
+                self._max_energy = float(search_results.groups()[0])
+                still_searching = False
+            search_results = re.match(f"MIN ENERGY ({floating_point_regex})", line)
+            if still_searching and search_results:
+                self._min_energy = float(search_results.groups()[0])
+                still_searching = False
+            search_results = re.match(f"MAX MERGES ({non_negative_integer_regex})", line)
+            if still_searching and search_results:
+                self._max_merges = int(search_results.groups()[0])
+                still_searching = False
+            search_results = re.match(f"MIN MERGES ({non_negative_integer_regex})", line)
+            if still_searching and search_results:
+                self._min_merges = int(search_results.groups()[0])
+                still_searching = False
+            search_results = re.match(f"MAX POLYMERS ({non_negative_integer_regex})", line)
+            if still_searching and search_results:
+                self._max_polymers = int(search_results.groups()[0])
+                still_searching = False
+            search_results = re.match(f"MIN POLYMERS ({non_negative_integer_regex})", line)
+            if still_searching and search_results:
+                self._min_polymers = int(search_results.groups()[0])
+                still_searching = False
+            if still_searching:
+                raise AssertionError(f"Cannot parse line '{line}' in constraints file")
 
-    def set_fixed_energy(self, amount_of_energy: float):
-        self._max_energy = amount_of_energy
-        self._min_energy = amount_of_energy
+    def with_fixed_polymers(self, number_of_polymers: int) -> "Constraints":
+        this = copy(self)
+        this._max_polymers = number_of_polymers
+        this._min_polymers = number_of_polymers
+        return this
 
-    def unset_optimization_flag(self):
-        self._optimize = False
+    def with_fixed_merges(self, number_of_merges: int) -> "Constraints":
+        this = copy(self)
+        this._max_merges = number_of_merges
+        this._min_merges = number_of_merges
+        return this
+
+    def with_fixed_energy(self, amount_of_energy: float) -> "Constraints":
+        this = copy(self)
+        this._max_energy = amount_of_energy
+        this._min_energy = amount_of_energy
+        return this
+
+    def with_unset_optimization_flag(self) -> "Constraints":
+        this = copy(self)
+        this._optimize = False
+        return this
 
     def max_polymers(self):
         return self._max_polymers

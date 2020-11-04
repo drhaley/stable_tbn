@@ -54,12 +54,11 @@ class Solver:
 
     def stable_config(self,
                       tbn: Tbn,
+                      user_constraints: Constraints = Constraints(),
                       formulation: SolverFormulation = SolverFormulation.POLYMER_UNBOUNDED_MATRIX,
                       bond_weighting_factor: Optional[float] = None,
                       verbose: bool = False,
                       ) -> Configuration:
-        # TODO: connect user_constraints to the front end
-        user_constraints = Constraints()
         if formulation == SolverFormulation.POLYMER_BINARY_MATRIX:
             formulation = PolymerBinaryMatrixFormulation(tbn, self.__single_solve_adapter, user_constraints)
             return formulation.get_configuration(verbose=verbose)
@@ -87,22 +86,18 @@ class Solver:
 
     def stable_configs(self,
                        tbn: Tbn,
+                       user_constraints: Constraints = Constraints(),
                        formulation: SolverFormulation = SolverFormulation.POLYMER_UNBOUNDED_MATRIX,
                        bond_weighting_factor: Optional[float] = None,
                        verbose: bool = False,
                        ) -> Iterator[Configuration]:
-        # TODO: connect user_constraints to the front end
-        user_constraints = Constraints()
-
         if user_constraints.optimize():  # do a first solve to find optimal objective value
             example_stable_configuration = self.stable_config(
-                tbn, formulation=formulation, bond_weighting_factor=bond_weighting_factor, verbose=verbose,
+                tbn, user_constraints=user_constraints, formulation=formulation, bond_weighting_factor=bond_weighting_factor, verbose=verbose,
             )
-            number_of_polymers = example_stable_configuration.number_of_polymers()
             number_of_merges = example_stable_configuration.number_of_merges()
-            user_constraints.set_fixed_polymers(number_of_polymers)
-            user_constraints.set_fixed_merges(number_of_merges)
-            user_constraints.unset_optimization_flag()
+            user_constraints = user_constraints.with_fixed_merges(number_of_merges)
+            user_constraints = user_constraints.with_unset_optimization_flag()
 
         if formulation == SolverFormulation.POLYMER_BINARY_MATRIX:
             formulation = PolymerBinaryMatrixFormulation(tbn, self.__multi_solve_adapter, user_constraints)
@@ -113,7 +108,7 @@ class Solver:
         elif formulation == SolverFormulation.POLYMER_UNBOUNDED_MATRIX:
             formulation = PolymerUnboundedMatrixFormulation(tbn, self.__multi_solve_adapter, user_constraints)
             return formulation.get_all_configurations(verbose=verbose)
-        else: # TODO: move all formulations into above clauses
+        else:  # TODO: move all formulations into above clauses
             if formulation == SolverFormulation.VARIABLE_BOND_WEIGHT:
                 max_energy = example_stable_configuration.energy(bond_weighting_factor)
                 return self.configs_with_energy(
