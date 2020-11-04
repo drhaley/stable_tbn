@@ -42,7 +42,7 @@ class Formulation(AbstractFormulation):
             self.total_number_of_monomers
         )
         self.model.set_big_m(self.upper_bound_on_total_monomers_in_complexes)
-        if self.user_constraints.max_polymers() is infinity:
+        if self.user_constraints.max_polymers() == infinity:
             self.max_polymers = self.total_number_of_limiting_monomers
         else:
             self.max_polymers = self.user_constraints.max_polymers()
@@ -145,6 +145,10 @@ class Formulation(AbstractFormulation):
         number_of_polymers = sum(self.indicator_vars[j] for j in range(self.max_polymers))
         number_of_merges = total_number_of_monomers_used - number_of_polymers
 
+        if self.user_constraints.max_merges() != infinity:
+            self.model.add_constraint(number_of_merges <= self.user_constraints.max_merges())
+        if self.user_constraints.min_merges() > 0:
+            self.model.add_constraint(number_of_merges >= self.user_constraints.min_merges())
         if self.user_constraints.optimize():
             self.model.minimize(number_of_merges)
 

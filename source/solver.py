@@ -11,6 +11,7 @@ from source.polymer import Polymer
 from source.monomer import Monomer
 from source.solver_adapters import constraint_programming, integer_programming
 from source.solver_adapters import abstract as adapter
+from source.constraints import Constraints
 
 from source.formulations.abstract import Formulation as AbstractFormulation
 from source.formulations.bond_aware_network import Formulation as BondAwareNetworkFormulation
@@ -57,16 +58,18 @@ class Solver:
                       bond_weighting_factor: Optional[float] = None,
                       verbose: bool = False,
                       ) -> Configuration:
+        # TODO: connect user_constraints to the front end
+        user_constraints = Constraints()
         if formulation == SolverFormulation.POLYMER_BINARY_MATRIX:
-            formulation = PolymerBinaryMatrixFormulation(tbn, self.__single_solve_adapter)
+            formulation = PolymerBinaryMatrixFormulation(tbn, self.__single_solve_adapter, user_constraints)
             return formulation.get_configuration(verbose=verbose)
         elif formulation == SolverFormulation.POLYMER_INTEGER_MATRIX:
-            formulation = PolymerIntegerMatrixFormulation(tbn, self.__single_solve_adapter)
+            formulation = PolymerIntegerMatrixFormulation(tbn, self.__single_solve_adapter, user_constraints)
             return formulation.get_configuration(verbose=verbose)
         elif formulation == SolverFormulation.POLYMER_UNBOUNDED_MATRIX:
-            formulation = PolymerUnboundedMatrixFormulation(tbn, self.__single_solve_adapter)
+            formulation = PolymerUnboundedMatrixFormulation(tbn, self.__single_solve_adapter, user_constraints)
             return formulation.get_configuration(verbose=verbose)
-        else: # TODO: move all formulations into above clauses
+        else:  # TODO: move all formulations into above clauses
             model, ordered_monomer_types, polymer_composition_vars = self.__build_model(
                 tbn, formulation=formulation, bond_weighting_factor=bond_weighting_factor
             )
@@ -88,34 +91,54 @@ class Solver:
                        bond_weighting_factor: Optional[float] = None,
                        verbose: bool = False,
                        ) -> Iterator[Configuration]:
-        example_stable_configuration = self.stable_config(
-            tbn, formulation=formulation, bond_weighting_factor=bond_weighting_factor, verbose=verbose,
-        )
-        if formulation == SolverFormulation.VARIABLE_BOND_WEIGHT:
-            max_energy = example_stable_configuration.energy(bond_weighting_factor)
-            return self.configs_with_energy(
-                tbn,
-                formulation=formulation,
-                max_energy=max_energy,
-                bond_weighting_factor=bond_weighting_factor,
-                verbose=verbose
+        # TODO: connect user_constraints to the front end
+        user_constraints = Constraints()
+
+        if user_constraints.optimize():  # do a first solve to find optimal objective value
+            example_stable_configuration = self.stable_config(
+                tbn, formulation=formulation, bond_weighting_factor=bond_weighting_factor, verbose=verbose,
             )
-        elif formulation == SolverFormulation.POLYMER_UNBOUNDED_MATRIX:
-            number_of_merges = example_stable_configuration.number_of_merges()
-            return self.configs_with_number_of_merges(
-                tbn,
-                formulation=formulation,
-                number_of_merges=number_of_merges,
-                verbose=verbose
-            )
-        else:
             number_of_polymers = example_stable_configuration.number_of_polymers()
-            return self.configs_with_number_of_polymers(
-                tbn,
-                formulation=formulation,
-                number_of_polymers=number_of_polymers,
-                verbose=verbose
-            )
+            number_of_merges = example_stable_configuration.number_of_merges()
+            user_constraints.set_fixed_polymers(number_of_polymers)
+            user_constraints.set_fixed_merges(number_of_merges)
+            user_constraints.unset_optimization_flag()
+
+        if formulation == SolverFormulation.POLYMER_BINARY_MATRIX:
+            formulation = PolymerBinaryMatrixFormulation(tbn, self.__multi_solve_adapter, user_constraints)
+            return formulation.get_all_configurations(verbose=verbose)
+        elif formulation == SolverFormulation.POLYMER_INTEGER_MATRIX:
+            formulation = PolymerIntegerMatrixFormulation(tbn, self.__multi_solve_adapter, user_constraints)
+            return formulation.get_all_configurations(verbose=verbose)
+        elif formulation == SolverFormulation.POLYMER_UNBOUNDED_MATRIX:
+            formulation = PolymerUnboundedMatrixFormulation(tbn, self.__multi_solve_adapter, user_constraints)
+            return formulation.get_all_configurations(verbose=verbose)
+        else: # TODO: move all formulations into above clauses
+            if formulation == SolverFormulation.VARIABLE_BOND_WEIGHT:
+                max_energy = example_stable_configuration.energy(bond_weighting_factor)
+                return self.configs_with_energy(
+                    tbn,
+                    formulation=formulation,
+                    max_energy=max_energy,
+                    bond_weighting_factor=bond_weighting_factor,
+                    verbose=verbose
+                )
+            elif formulation == SolverFormulation.POLYMER_UNBOUNDED_MATRIX:
+                number_of_merges = example_stable_configuration.number_of_merges()
+                return self.configs_with_number_of_merges(
+                    tbn,
+                    formulation=formulation,
+                    number_of_merges=number_of_merges,
+                    verbose=verbose
+                )
+            else:
+                number_of_polymers = example_stable_configuration.number_of_polymers()
+                return self.configs_with_number_of_polymers(
+                    tbn,
+                    formulation=formulation,
+                    number_of_polymers=number_of_polymers,
+                    verbose=verbose
+                )
 
     def configs_with_number_of_polymers(self,
                                         tbn: Tbn,
