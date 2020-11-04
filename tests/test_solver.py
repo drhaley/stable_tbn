@@ -183,15 +183,15 @@ class TestSolver(unittest.TestCase):
             # second argument is a list of number of configurations expected for specific numbers of polymers:
             #  e.g. [a,b,c,d] => 'a' configurations with 1 polymer, 'b' configurations with 2 polymers, etc., up to 4
 
-            ("a* b* \n a b \n a* \n b*", [12, 7, 1, 0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
+            ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
             ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
             ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
 
-            ("2[a* b*] \n a b", [ 5, 2, 0, 0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
+            ("2[a* b*] \n a b", [ 1, 2, 0, 0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
             ("2[a* b*] \n a b", [ 1, 2, 0, 0], self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
             ("2[a* b*] \n a b", [ 1, 1, 0, 0], self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
 
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [ 9, 4, 0, 0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [ 1, 4, 0, 0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [ 1, 4, 0, 0], self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [ 1, 3, 0, 0], self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
         ]

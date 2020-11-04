@@ -55,6 +55,13 @@ class Formulation(AbstractFormulation):
             for j in range(i + 1, self.total_number_of_monomers):
                 self.model.add_implication(self.grouping_vars[i, j], self.model.complement_var(self.rep_vars[j]))
 
+        # if a monomer is not the representative, then it must be grouped with a monomer earlier in the ordering
+        for j in range(self.total_number_of_monomers):
+            self.model.add_greater_than_zero_implication(
+                self.model.complement_var(self.rep_vars[j]),
+                sum(self.grouping_vars[i, j] for i in range(j))
+            )
+
         self._add_saturation_constraints()
 
     def _add_saturation_constraints(self) -> None:
