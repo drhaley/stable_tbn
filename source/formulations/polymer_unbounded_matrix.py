@@ -100,16 +100,24 @@ class Formulation(AbstractFormulation):
                 )
 
     def _add_polymer_indicator_constraints(self) -> None:
-        # this constraint encodes the logic for the polymer indicator variables: 0 if polymer is empty else 0/1
+        # this constraint encodes the logic for the polymer indicator variables: 0 if polymer is empty else 1
         #  can only be 1 if the polymer has a limiting monomer inside it,
         #  to prevent the algorithm for producing "optimal" configurations in which
         #  superfluous singletons are made explicit, which results in many isomorphic solutions
         for j in range(self.max_polymers):
-            self.model.add_constraint(
-                self.indicator_vars[j] <=
-                sum(self.polymer_composition_vars[i, j]
+            number_of_monomers_in_polymer = sum(
+                self.polymer_composition_vars[i, j]
                     for i, monomer in enumerate(self.ordered_monomer_types)
-                    if monomer in self.limiting_monomer_types)
+                    if monomer in self.limiting_monomer_types
+            )
+            # indicator can only be 1 if polymer contains limiting monomers
+            self.model.add_constraint(
+                self.indicator_vars[j] <= number_of_monomers_in_polymer
+            )
+            # indicator can only be 0 if polymer contains no limiting monomers
+            self.model.add_equal_to_zero_implication(
+                self.model.complement_var(self.indicator_vars[j]),
+                number_of_monomers_in_polymer
             )
 
     def _add_sorting_constraints(self) -> None:

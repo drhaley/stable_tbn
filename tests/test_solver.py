@@ -3,6 +3,7 @@ from math import inf as infinity
 
 from source.tbn import Tbn
 from source.solver import Solver, SolverMethod, SolverFormulation
+from source.constraints import Constraints
 
 
 class TestSolver(unittest.TestCase):
@@ -199,10 +200,11 @@ class TestSolver(unittest.TestCase):
                 test_tbn = Tbn.from_string(tbn_string)
                 for polymer_count_minus_one, number_of_configs in enumerate(number_of_configs_with_polymer_count):
                     polymer_count = polymer_count_minus_one + 1
+                    constraints = Constraints().with_fixed_polymers(polymer_count).with_unset_optimization_flag()
                     configurations = list(
-                        solver.configs_with_number_of_polymers(
+                        solver.stable_configs(
                             test_tbn,
-                            number_of_polymers=polymer_count,
+                            constraints,
                             formulation=formulation
                         )
                     )
