@@ -45,18 +45,8 @@ class IpModel(abstract.Model, pywraplp.Solver):
             consequent = args[-1]
             antecedents = args[:-1]
 
-        # delta1 and delta2 will be the indicators for the nonzeroness (i.e. truthfulness) of the consequent.
-        # If consequent < 0, delta1 can be 1
-        # If consequent > 0, delta2 can be 1
-        # we force either of delta1 or delta2 to be the value 1
-        delta1 = self.bool_var(f'indicator_chain1_{self.__get_id()}')
-        delta2 = self.bool_var(f'indicator_chain2_{self.__get_id()}')
-        self.add_constraint(consequent <= -1 + big_m * (-delta1 + 1))
-        self.add_constraint(consequent >= 1 - big_m * (-delta2 + 1))
-
-        # for p => (q => delta), change to delta + (1-p) + (1-q) >= 1.  for more antecedents, extrapolate
         constraint = self.add_constraint(
-            delta1 + delta2 + sum(self.complement_var(antecedent) for antecedent in antecedents) >= 1
+            consequent + sum(self.complement_var(antecedent) for antecedent in antecedents) >= 1
         )
         return constraint
 
