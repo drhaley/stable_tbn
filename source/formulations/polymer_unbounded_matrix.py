@@ -151,13 +151,13 @@ class Formulation(AbstractFormulation):
                 for i in range(len(self.ordered_monomer_types))
                 for j in range(self.max_polymers)
         )
-        number_of_polymers = sum(self.indicator_vars[j] for j in range(self.max_polymers))
-        self.number_of_merges = total_number_of_monomers_used - number_of_polymers
+        self.number_of_polymers = sum(self.indicator_vars[j] for j in range(self.max_polymers))
+        self.number_of_merges = total_number_of_monomers_used - self.number_of_polymers
 
         if self.user_constraints.max_polymers() != infinity:
-            self.model.add_constraint(number_of_polymers <= self.user_constraints.max_polymers())
+            self.model.add_constraint(self.number_of_polymers <= self.user_constraints.max_polymers())
         if self.user_constraints.min_polymers() > 0:
-            self.model.add_constraint(number_of_polymers >= self.user_constraints.min_polymers())
+            self.model.add_constraint(self.number_of_polymers >= self.user_constraints.min_polymers())
         if self.user_constraints.max_merges() != infinity:
             self.model.add_constraint(self.number_of_merges <= self.user_constraints.max_merges())
         if self.user_constraints.min_merges() > 0:

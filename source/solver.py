@@ -13,7 +13,6 @@ from source.solver_adapters import constraint_programming, integer_programming
 from source.solver_adapters import abstract as adapter
 from source.constraints import Constraints
 
-from source.formulations.abstract import Formulation as AbstractFormulation
 from source.formulations.bond_aware_network import Formulation as BondAwareNetworkFormulation
 from source.formulations.bond_oblivious_network import Formulation as BondObliviousNetworkFormulation
 from source.formulations.polymer_binary_matrix import Formulation as PolymerBinaryMatrixFormulation
@@ -62,7 +61,13 @@ class Solver:
         if bond_weighting_factor is not None:
             user_constraints = user_constraints.with_bond_weight(bond_weighting_factor)
 
-        if formulation == SolverFormulation.POLYMER_BINARY_MATRIX:
+        if formulation == SolverFormulation.BOND_AWARE_NETWORK:
+            formulation = BondAwareNetworkFormulation(tbn, self.__single_solve_adapter, user_constraints)
+            return formulation.get_configuration(verbose=verbose)
+        elif formulation == SolverFormulation.BOND_OBLIVIOUS_NETWORK:
+            formulation = BondObliviousNetworkFormulation(tbn, self.__single_solve_adapter, user_constraints)
+            return formulation.get_configuration(verbose=verbose)
+        elif formulation == SolverFormulation.POLYMER_BINARY_MATRIX:
             formulation = PolymerBinaryMatrixFormulation(tbn, self.__single_solve_adapter, user_constraints)
             return formulation.get_configuration(verbose=verbose)
         elif formulation == SolverFormulation.POLYMER_INTEGER_MATRIX:
@@ -72,23 +77,10 @@ class Solver:
             formulation = PolymerUnboundedMatrixFormulation(tbn, self.__single_solve_adapter, user_constraints)
             return formulation.get_configuration(verbose=verbose)
         elif formulation == SolverFormulation.VARIABLE_BOND_WEIGHT:
-            formulation = VariableBondWeightFormulation(tbn, self.__multi_solve_adapter, user_constraints)
+            formulation = VariableBondWeightFormulation(tbn, self.__single_solve_adapter, user_constraints)
             return formulation.get_configuration(verbose=verbose)
-        else:  # TODO: move all formulations into above clauses
-            model, ordered_monomer_types, polymer_composition_vars = self.__build_model(
-                tbn, formulation=formulation, bond_weighting_factor=bond_weighting_factor
-            )
-            status = self.__single_solve_adapter.solve(model, list(polymer_composition_vars.values()), verbose=verbose)
-
-            if status == model.INFEASIBLE:
-                raise AssertionError(f"Could not find optimal solution to tbn, was reported infeasible")
-            elif status != model.OPTIMAL:
-                raise AssertionError(f"could not find optimal solution to tbn, got code {status} instead")
-            else:
-                value_dict = {var: self.__single_solve_adapter.value(var) for var in polymer_composition_vars.values()}
-                return self.interpret_solution(
-                    tbn, ordered_monomer_types, polymer_composition_vars, value_dict, formulation=formulation
-                )
+        else:
+            raise AssertionError(f"did not recognize formulation requested: {formulation}")
 
     def stable_configs(self,
                        tbn: Tbn,
@@ -109,15 +101,30 @@ class Solver:
                 verbose=verbose,
             )
             user_constraints = user_constraints.with_unset_optimization_flag()
+            number_of_polymers = example_stable_configuration.number_of_polymers()
             number_of_merges = example_stable_configuration.number_of_merges()
             amount_of_energy = example_stable_configuration.energy(user_constraints.bond_weight())
+            fixed_polymer_user_constraints = user_constraints.with_fixed_polymers(number_of_polymers)
             fixed_merge_user_constraints = user_constraints.with_fixed_merges(number_of_merges)
             fixed_energy_user_constraints = user_constraints.with_fixed_energy(amount_of_energy)
         else:
+            fixed_polymer_user_constraints = user_constraints
             fixed_merge_user_constraints = user_constraints
             fixed_energy_user_constraints = user_constraints
 
-        if formulation == SolverFormulation.POLYMER_BINARY_MATRIX:
+        if formulation == SolverFormulation.BOND_AWARE_NETWORK:
+            formulation = BondAwareNetworkFormulation(
+                tbn, self.__multi_solve_adapter, fixed_polymer_user_constraints
+            )
+            return formulation.get_all_configurations(verbose=verbose)
+
+        elif formulation == SolverFormulation.BOND_OBLIVIOUS_NETWORK:
+            formulation = BondObliviousNetworkFormulation(
+                tbn, self.__multi_solve_adapter, fixed_polymer_user_constraints
+            )
+            return formulation.get_all_configurations(verbose=verbose)
+
+        elif formulation == SolverFormulation.POLYMER_BINARY_MATRIX:
             formulation = PolymerBinaryMatrixFormulation(
                 tbn, self.__multi_solve_adapter, fixed_merge_user_constraints
             )
@@ -141,14 +148,8 @@ class Solver:
             )
             return formulation.get_all_configurations(verbose=verbose)
 
-        else:  # TODO: move all formulations into above clauses
-            number_of_polymers = example_stable_configuration.number_of_polymers()
-            return self.configs_with_number_of_polymers(
-                tbn,
-                formulation=formulation,
-                number_of_polymers=number_of_polymers,
-                verbose=verbose
-            )
+        else:
+            raise AssertionError(f"did not recognize formulation requested: {formulation}")
 
     def configs_with_number_of_polymers(self,
                                         tbn: Tbn,
@@ -156,6 +157,7 @@ class Solver:
                                         number_of_polymers: Optional[int] = None,
                                         verbose: bool = False
                                         ) -> Iterator[Configuration]:
+        # TODO: reroute this to new formulation hierarchy
         total_number_of_monomers = sum(
             tbn.count(monomer_type)
             for monomer_type in tbn.monomer_types()
@@ -188,6 +190,7 @@ class Solver:
                                       max_number_of_polymers: Optional[int] = None,
                                       verbose: bool = False,
                                       ) -> Iterator[Configuration]:
+        # TODO: reroute this to new formulation hierarchy
         model, ordered_monomer_types, polymer_composition_vars = self.__build_model(
             tbn,
             formulation=formulation,
@@ -212,6 +215,7 @@ class Solver:
                             max_number_of_polymers: Optional[int] = None,
                             verbose: bool = False,
                             ) -> Iterator[Configuration]:
+        # TODO: reroute this to new formulation hierarchy
         model, ordered_monomer_types, polymer_composition_vars = self.__build_model(
             tbn,
             formulation=formulation,
@@ -261,6 +265,7 @@ class Solver:
         :return:
             (model, ordered_monomer_list, polymer_inclusion_matrix_entry_dict)
         """
+        # TODO: remove when no longer needed
 
         # StableGen formulation is qualitatively different, so factored that code out.  Some code is shared, but
         #  seems more straightforward at this point to isolate them
@@ -489,6 +494,8 @@ class Solver:
                                 a_priori_number_of_polymers: Optional[int] = None,
                                 ) -> Tuple[adapter.Model, List[Monomer], Dict[Tuple[int, int], Any]]:
 
+        # TODO: remove when no longer needed
+
         if a_priori_number_of_polymers is None:
             optimize = True
         else:
@@ -604,6 +611,8 @@ class Solver:
                 formulation: SolverFormulation,
             ) -> Configuration:
 
+        # TODO: remove when no longer needed
+
         if formulation in [SolverFormulation.BOND_AWARE_NETWORK, SolverFormulation.BOND_OBLIVIOUS_NETWORK]:
             return self.interpret_bind_map_solution(tbn, ordered_monomer_types, polymer_composition_vars, value_dict)
         else:
@@ -618,6 +627,8 @@ class Solver:
                 bind_vars: Dict[Tuple[int, int], Any],
                 value_dict: Dict[Any, int],
             ) -> Configuration:
+
+        # TODO: remove when no longer needed
 
         this_configuration_dict = {}
         n = len(ordered_monomers)
@@ -643,6 +654,8 @@ class Solver:
                 polymer_composition_vars: Dict[Tuple[int, int], Any],
                 value_dict: Dict[Any, int],
             ) -> Configuration:
+
+        # TODO: remove when no longer needed
 
         number_of_polymers = 1 + max(j for _, j in polymer_composition_vars)
         this_configuration_dict = {}
