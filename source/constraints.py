@@ -16,6 +16,7 @@ class Constraints:
         self._min_energy = -infinity
         self._sort = True
         self._optimize = True
+        self._bond_weight = 2.0
 
     @classmethod
     def from_string(cls, text: str) -> "Constraints":
@@ -30,6 +31,7 @@ class Constraints:
         # TODO: refactor the boiler plate switch structure
         line = line.upper()
 
+        unsigned_floating_point_regex = r"(?:[0-9]*[.])?[0-9]+"
         floating_point_regex = r"[+-]?(?:[0-9]*[.])?[0-9]+"
         non_negative_integer_regex = r"[0-9]+"
 
@@ -71,6 +73,10 @@ class Constraints:
             if still_searching and search_results:
                 self._min_polymers = int(search_results.groups()[0])
                 still_searching = False
+            search_results = re.match(f"BOND WEIGHT ({unsigned_floating_point_regex})", line)
+            if still_searching and search_results:
+                self._bond_weight = float(search_results.groups()[0])
+                still_searching = False
             if still_searching:
                 raise AssertionError(f"Cannot parse line '{line}' in constraints file")
 
@@ -90,6 +96,11 @@ class Constraints:
         this = copy(self)
         this._max_energy = amount_of_energy
         this._min_energy = amount_of_energy
+        return this
+
+    def with_bond_weight(self, bond_weight: float) -> "Constraints":
+        this = copy(self)
+        this._bond_weight = bond_weight
         return this
 
     def with_unset_optimization_flag(self) -> "Constraints":
@@ -120,3 +131,6 @@ class Constraints:
 
     def optimize(self):
         return self._optimize
+
+    def bond_weight(self):
+        return self._bond_weight

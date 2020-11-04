@@ -59,6 +59,9 @@ class Solver:
                       bond_weighting_factor: Optional[float] = None,
                       verbose: bool = False,
                       ) -> Configuration:
+        if bond_weighting_factor is not None:
+            user_constraints = user_constraints.with_bond_weight(bond_weighting_factor)
+
         if formulation == SolverFormulation.POLYMER_BINARY_MATRIX:
             formulation = PolymerBinaryMatrixFormulation(tbn, self.__single_solve_adapter, user_constraints)
             return formulation.get_configuration(verbose=verbose)
@@ -67,6 +70,9 @@ class Solver:
             return formulation.get_configuration(verbose=verbose)
         elif formulation == SolverFormulation.POLYMER_UNBOUNDED_MATRIX:
             formulation = PolymerUnboundedMatrixFormulation(tbn, self.__single_solve_adapter, user_constraints)
+            return formulation.get_configuration(verbose=verbose)
+        elif formulation == SolverFormulation.VARIABLE_BOND_WEIGHT:
+            formulation = VariableBondWeightFormulation(tbn, self.__multi_solve_adapter, user_constraints)
             return formulation.get_configuration(verbose=verbose)
         else:  # TODO: move all formulations into above clauses
             model, ordered_monomer_types, polymer_composition_vars = self.__build_model(
@@ -91,49 +97,58 @@ class Solver:
                        bond_weighting_factor: Optional[float] = None,
                        verbose: bool = False,
                        ) -> Iterator[Configuration]:
+        if bond_weighting_factor is not None:
+            user_constraints = user_constraints.with_bond_weight(bond_weighting_factor)
+
         if user_constraints.optimize():  # do a first solve to find optimal objective value
             example_stable_configuration = self.stable_config(
-                tbn, user_constraints=user_constraints, formulation=formulation, bond_weighting_factor=bond_weighting_factor, verbose=verbose,
+                tbn,
+                user_constraints=user_constraints,
+                formulation=formulation,
+                bond_weighting_factor=bond_weighting_factor,
+                verbose=verbose,
             )
-            number_of_merges = example_stable_configuration.number_of_merges()
-            user_constraints = user_constraints.with_fixed_merges(number_of_merges)
             user_constraints = user_constraints.with_unset_optimization_flag()
+            number_of_merges = example_stable_configuration.number_of_merges()
+            amount_of_energy = example_stable_configuration.energy(user_constraints.bond_weight())
+            fixed_merge_user_constraints = user_constraints.with_fixed_merges(number_of_merges)
+            fixed_energy_user_constraints = user_constraints.with_fixed_energy(amount_of_energy)
+        else:
+            fixed_merge_user_constraints = user_constraints
+            fixed_energy_user_constraints = user_constraints
 
         if formulation == SolverFormulation.POLYMER_BINARY_MATRIX:
-            formulation = PolymerBinaryMatrixFormulation(tbn, self.__multi_solve_adapter, user_constraints)
+            formulation = PolymerBinaryMatrixFormulation(
+                tbn, self.__multi_solve_adapter, fixed_merge_user_constraints
+            )
             return formulation.get_all_configurations(verbose=verbose)
+
         elif formulation == SolverFormulation.POLYMER_INTEGER_MATRIX:
-            formulation = PolymerIntegerMatrixFormulation(tbn, self.__multi_solve_adapter, user_constraints)
+            formulation = PolymerIntegerMatrixFormulation(
+                tbn, self.__multi_solve_adapter, fixed_merge_user_constraints
+            )
             return formulation.get_all_configurations(verbose=verbose)
+
         elif formulation == SolverFormulation.POLYMER_UNBOUNDED_MATRIX:
-            formulation = PolymerUnboundedMatrixFormulation(tbn, self.__multi_solve_adapter, user_constraints)
+            formulation = PolymerUnboundedMatrixFormulation(
+                tbn, self.__multi_solve_adapter, fixed_merge_user_constraints
+            )
             return formulation.get_all_configurations(verbose=verbose)
+
+        elif formulation == SolverFormulation.VARIABLE_BOND_WEIGHT:
+            formulation = VariableBondWeightFormulation(
+                tbn, self.__multi_solve_adapter, fixed_energy_user_constraints
+            )
+            return formulation.get_all_configurations(verbose=verbose)
+
         else:  # TODO: move all formulations into above clauses
-            if formulation == SolverFormulation.VARIABLE_BOND_WEIGHT:
-                max_energy = example_stable_configuration.energy(bond_weighting_factor)
-                return self.configs_with_energy(
-                    tbn,
-                    formulation=formulation,
-                    max_energy=max_energy,
-                    bond_weighting_factor=bond_weighting_factor,
-                    verbose=verbose
-                )
-            elif formulation == SolverFormulation.POLYMER_UNBOUNDED_MATRIX:
-                number_of_merges = example_stable_configuration.number_of_merges()
-                return self.configs_with_number_of_merges(
-                    tbn,
-                    formulation=formulation,
-                    number_of_merges=number_of_merges,
-                    verbose=verbose
-                )
-            else:
-                number_of_polymers = example_stable_configuration.number_of_polymers()
-                return self.configs_with_number_of_polymers(
-                    tbn,
-                    formulation=formulation,
-                    number_of_polymers=number_of_polymers,
-                    verbose=verbose
-                )
+            number_of_polymers = example_stable_configuration.number_of_polymers()
+            return self.configs_with_number_of_polymers(
+                tbn,
+                formulation=formulation,
+                number_of_polymers=number_of_polymers,
+                verbose=verbose
+            )
 
     def configs_with_number_of_polymers(self,
                                         tbn: Tbn,

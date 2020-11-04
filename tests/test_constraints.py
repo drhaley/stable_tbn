@@ -10,10 +10,11 @@ class TestConstraints(unittest.TestCase):
 
     def test_from_string(self):
         test_cases = [
-            (True, True, 50.7, -12.34, 10, 2, 50, 20),
-            (True, True, -16.7, -40.001, 1, 1, 2, 2),
+            (True, True, 50.7, -12.34, 10, 2, 50, 20, 2.3),
+            (True, True, -16.7, -40.001, 1, 1, 2, 2, 4.12),
         ]
-        for (optimize, sort, max_energy, min_energy, max_polymers, min_polymers, max_merges, min_merges) in test_cases:
+        for (optimize, sort, max_energy, min_energy, max_polymers, min_polymers, max_merges, min_merges, bond_weight)\
+                in test_cases:
             test_constraints = Constraints.from_string(
                 f"""
                 {'NO ' if not optimize else ''}OPTIMIZE
@@ -24,6 +25,7 @@ class TestConstraints(unittest.TestCase):
                 MIN POLYMERS {min_polymers}
                 MAX MERGES {max_merges}
                 MIN MERGES {min_merges}
+                BOND WEIGHT {bond_weight}
                 """
             )
             with self.subTest(optimize=optimize):
@@ -39,6 +41,8 @@ class TestConstraints(unittest.TestCase):
             with self.subTest(max_energy=max_merges, min_energy=min_merges):
                 self.assertEqual(max_merges, test_constraints.max_merges())
                 self.assertEqual(min_merges, test_constraints.min_merges())
+            with self.subTest(bond_weight=bond_weight):
+                self.assertEqual(bond_weight, test_constraints.bond_weight())
 
     def test_add_new_constraint_from_string(self):
         constraints = Constraints.from_string("OPTIMIZE")
@@ -77,6 +81,15 @@ class TestConstraints(unittest.TestCase):
             self.assertEqual(fixed_amount_of_energy, new_constraints.min_energy())
             self.assertNotEqual(fixed_amount_of_energy, old_constraints.max_energy())
             self.assertNotEqual(fixed_amount_of_energy, old_constraints.min_energy())
+            old_constraints = new_constraints
+
+    def test_with_bond_weight(self):
+        test_cases = [15.36, 2.19]
+        old_constraints = Constraints()
+        for bond_weight in test_cases:
+            new_constraints = old_constraints.with_bond_weight(bond_weight)
+            self.assertEqual(bond_weight, new_constraints.bond_weight())
+            self.assertNotEqual(bond_weight, old_constraints.bond_weight())
             old_constraints = new_constraints
 
     def test_with_unset_optimization_flag(self):

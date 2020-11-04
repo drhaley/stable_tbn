@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List
 from math import inf as infinity
 
 from source.monomer import Monomer

@@ -1,38 +1,60 @@
-from typing import Iterator, List, Any, Dict
+from math import inf as infinity
+from math import ceil, floor
 
-from source.formulations.abstract import Formulation as AbstractFormulation
-from source.tbn import Tbn
-from source.configuration import Configuration
-from source.constraints import Constraints
+from source.formulations.polymer_unbounded_matrix import Formulation as UnboundedFormulation
 
 
-class Formulation(AbstractFormulation):
-    def _populate_model(self) -> None:
-        """
-        populates self.model with the variables and constraints needed to solve a formulation
-        """
-        self._add_variables()
-        self._add_constraints()
-
+class Formulation(UnboundedFormulation):
     def _add_variables(self) -> None:
-        pass
-        # self.model.bool_var()
-        # self.model.int_var()
+        super()._add_variables()
 
-    def _add_constraints(self) -> None:
-        pass
-        # self.model.add_constraint()
+        # additional variables for low-W formulations which tracks number of unbound sites
+        self.bond_deficit_vars = {}
+        for domain in self.limiting_domain_types:
+            total_count_of_limiting_site = sum(
+                self.tbn.count(monomer_type) * abs(monomer_type.net_count(domain))
+                for monomer_type in self.limiting_monomer_types
+            )
+            for j in range(self.max_polymers):
+                self.bond_deficit_vars[domain, j] = self.model.int_var(
+                    0,
+                    total_count_of_limiting_site,
+                    f'deficit_{domain}_{j}'
+                )
 
-    def _variables_to_keep(self) -> List[Any]:
-        """
-        returns a list of the variables that are necessary to convert a solution back to a configuration
-          (e.g. returns polymer composition variables but not 'internal' tie-breaker variables)
-        """
-        pass
+    def _add_saturation_constraints(self) -> None:
+        # must saturate the limiting domains in each polymer OR pay a deficit in bond weight
+        for domain in self.limiting_domain_types:
+            for j in range(self.max_polymers):
+                self.model.add_constraint(
+                    sum(
+                        monomer.net_count(domain) * self.polymer_composition_vars[i, j]
+                        for i, monomer in enumerate(self.ordered_monomer_types)
+                    ) <= self.bond_deficit_vars[domain, j]
+                )
 
-    def _interpret_solution(self, variable_to_value_dictionary: Dict[Any, int]) -> Configuration:
-        """
-        uses the provided dictionary to convert solution variables into solution values and from this,
-          converts the solutions values into the corresponding configuration
-        """
-        pass
+    def _apply_counting_constraints(self) -> None:
+        super()._apply_counting_constraints()
+        self.total_bond_deficit = sum(
+            self.bond_deficit_vars[domain, j]
+            for domain in self.limiting_domain_types
+            for j in range(self.max_polymers)
+        )
+        scaling_factor = 100
+        self.scaled_energy = (
+                round(scaling_factor * self.user_constraints.bond_weight()) * self.total_bond_deficit
+                + scaling_factor * self.number_of_merges
+        )
+        if self.user_constraints.max_energy() != infinity:
+            self.model.add_constraint(self.scaled_energy <= ceil(scaling_factor * self.user_constraints.max_energy()))
+        if self.user_constraints.min_energy() != -infinity:
+            self.model.add_constraint(self.scaled_energy >= floor(scaling_factor * self.user_constraints.min_energy()))
+
+    def _apply_objective_function(self) -> None:
+        self.model.minimize(self.scaled_energy)
+
+    def _run_asserts(self) -> None:
+        super()._run_asserts()
+
+        if self.user_constraints.bond_weight() is None or self.user_constraints.bond_weight() <= 0.0:
+            raise AssertionError("For low-W formulation, must supply positive bond weighting factor.")

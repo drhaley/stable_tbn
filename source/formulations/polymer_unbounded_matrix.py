@@ -17,7 +17,9 @@ class Formulation(AbstractFormulation):
         self._add_variables()
         self._add_constraints()
         self._add_sorting_constraints()
-        self._apply_objective_function()
+        self._apply_counting_constraints()
+        if self.user_constraints.optimize():
+            self._apply_objective_function()
 
     def _construct_lists_and_calculate_constants(self) -> None:
         self.ordered_monomer_types, self.monomer_counts = self._get_monomer_types_and_counts()
@@ -64,6 +66,11 @@ class Formulation(AbstractFormulation):
             self.indicator_vars[j] = self.model.bool_var(f'indicator_{j}')
 
     def _add_constraints(self) -> None:
+        self._add_conservation_constraints()
+        self._add_saturation_constraints()
+        self._add_polymer_indicator_constraints()
+
+    def _add_conservation_constraints(self) -> None:
         # monomer conservation; must use all limiting monomers, and cannot exceed the count of other monomers
         for i, monomer in enumerate(self.ordered_monomer_types):
             if monomer in self.limiting_monomer_types:
@@ -81,6 +88,7 @@ class Formulation(AbstractFormulation):
                     ) <= self.monomer_counts[i]
                 )
 
+    def _add_saturation_constraints(self) -> None:
         # must saturate the limiting domains in each polymer
         for domain in self.limiting_domain_types:
             for j in range(self.max_polymers):
@@ -91,6 +99,7 @@ class Formulation(AbstractFormulation):
                     ) <= 0
                 )
 
+    def _add_polymer_indicator_constraints(self) -> None:
         # this constraint encodes the logic for the polymer indicator variables: 0 if polymer is empty else 0/1
         #  can only be 1 if the polymer has a limiting monomer inside it,
         #  to prevent the algorithm for producing "optimal" configurations in which
@@ -136,25 +145,26 @@ class Formulation(AbstractFormulation):
                         x - y,  # enforce that the above conditions imply x > y
                     )
 
-    def _apply_objective_function(self) -> None:
+    def _apply_counting_constraints(self) -> None:
         total_number_of_monomers_used = sum(
             self.polymer_composition_vars[i, j]
                 for i in range(len(self.ordered_monomer_types))
                 for j in range(self.max_polymers)
         )
         number_of_polymers = sum(self.indicator_vars[j] for j in range(self.max_polymers))
-        number_of_merges = total_number_of_monomers_used - number_of_polymers
+        self.number_of_merges = total_number_of_monomers_used - number_of_polymers
 
         if self.user_constraints.max_polymers() != infinity:
             self.model.add_constraint(number_of_polymers <= self.user_constraints.max_polymers())
         if self.user_constraints.min_polymers() > 0:
             self.model.add_constraint(number_of_polymers >= self.user_constraints.min_polymers())
         if self.user_constraints.max_merges() != infinity:
-            self.model.add_constraint(number_of_merges <= self.user_constraints.max_merges())
+            self.model.add_constraint(self.number_of_merges <= self.user_constraints.max_merges())
         if self.user_constraints.min_merges() > 0:
-            self.model.add_constraint(number_of_merges >= self.user_constraints.min_merges())
-        if self.user_constraints.optimize():
-            self.model.minimize(number_of_merges)
+            self.model.add_constraint(self.number_of_merges >= self.user_constraints.min_merges())
+
+    def _apply_objective_function(self) -> None:
+        self.model.minimize(self.number_of_merges)
 
     def _variables_to_keep(self) -> List[Any]:
         """
