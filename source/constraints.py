@@ -43,10 +43,6 @@ class Constraints:
             self._sort = True
         elif re.match("NO\\s+SORT", line):
             self._sort = False
-        elif re.match("OPTIMIZE", line):
-            self._optimize = True
-        elif re.match("NO\\s+OPTIMIZE", line):
-            self._optimize = False
         else:
             still_searching = True
             search_results = re.match(f"MAX ENERGY ({floating_point_regex})", line)

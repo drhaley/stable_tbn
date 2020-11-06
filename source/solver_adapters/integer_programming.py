@@ -36,7 +36,8 @@ class IpModel(abstract.Model, pywraplp.Solver):
 
     def add_implication(self, *args) -> Any:
         # intended call: .AddChainedImplication(antecedent1, antecedent2, ..., consequent)
-        big_m = self.__get_big_m()
+        #   it is assumed that consequent is a boolean variable.  If it is an expression, use other functions
+        #   e.g. add_greater_than_zero_implication, etc.
         if len(args) < 2:
             raise AssertionError(
                 "Call to AddChainedImplication with less than two arguments.  Need antecedent and consequent"

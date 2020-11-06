@@ -56,6 +56,7 @@ class Formulation(AbstractFormulation):
                 self.model.add_implication(self.grouping_vars[i, j], self.model.complement_var(self.rep_vars[j]))
 
         # if a monomer is not the representative, then it must be grouped with a monomer earlier in the ordering
+        #   in this way, we enforce that all polymers have at least one representative (by induction)
         for j in range(self.total_number_of_monomers):
             self.model.add_greater_than_zero_implication(
                 self.model.complement_var(self.rep_vars[j]),
