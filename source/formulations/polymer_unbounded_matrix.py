@@ -23,10 +23,7 @@ class Formulation(AbstractFormulation):
 
     def _construct_lists_and_calculate_constants(self) -> None:
         self.ordered_monomer_types, self.monomer_counts = self._get_monomer_types_and_counts()
-        self.total_number_of_monomers = sum(
-            self.tbn.count(monomer_type)
-            for monomer_type in self.ordered_monomer_types
-        )
+        self.total_number_of_monomers = sum(self.monomer_counts)
         self.limiting_domain_types = list(self.tbn.limiting_domain_types())
         self.limiting_monomer_types = self._get_limiting_monomer_types()
         self.total_number_of_limiting_monomers = sum(
@@ -163,9 +160,12 @@ class Formulation(AbstractFormulation):
         self.number_of_merges = total_number_of_monomers_used - self.number_of_polymers
 
         if self.user_constraints.max_polymers() != infinity:
-            self.model.add_constraint(self.number_of_polymers <= self.user_constraints.max_polymers())
+            inferred_min_merges = self.total_number_of_monomers - self.user_constraints.max_polymers()
+            self.model.add_constraint(self.number_of_merges >= inferred_min_merges)
         if self.user_constraints.min_polymers() > 0:
-            self.model.add_constraint(self.number_of_polymers >= self.user_constraints.min_polymers())
+            inferred_max_merges = self.total_number_of_monomers - self.user_constraints.min_polymers()
+            self.model.add_constraint(self.number_of_merges <= inferred_max_merges)
+
         if self.user_constraints.max_merges() != infinity:
             self.model.add_constraint(self.number_of_merges <= self.user_constraints.max_merges())
         if self.user_constraints.min_merges() > 0:
@@ -227,3 +227,6 @@ class Formulation(AbstractFormulation):
             raise NotImplementedError(
                 f"Not implemented to use this formulation with min energy: {self.user_constraints.min_energy()}"
             )
+        if self.user_constraints.max_polymers() != infinity:
+            if self.total_number_of_monomers == infinity:
+                raise AssertionError("Tbn has infinitely many monomers but only a finite max_polymers was specified")

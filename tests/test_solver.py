@@ -146,8 +146,10 @@ class TestSolver(unittest.TestCase):
         for tbn_string, number_of_configs, number_of_merges, solver, formulation in test_cases:
             with self.subTest(tbn_string=tbn_string, solver=solver, formulation=formulation):
                 test_tbn = Tbn.from_string(tbn_string)
-                configurations = solver.stable_configs(test_tbn, formulation=formulation, bond_weighting_factor=2.0)
-                self.assertEqual(number_of_configs, len(list(configurations)))
+                configurations = list(solver.stable_configs(test_tbn, formulation=formulation, bond_weighting_factor=2.0))
+                if number_of_configs == 2 and len(configurations) == 0:
+                    print("\n\n\nHELLO WORLD\n\n\n")
+                self.assertEqual(number_of_configs, len(configurations))
                 for configuration in configurations:
                     self.assertEqual(number_of_merges, configuration.number_of_merges())
 
@@ -186,14 +188,20 @@ class TestSolver(unittest.TestCase):
             ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
             ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
             ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
+            ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
+            ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
 
             ("2[a* b*] \n a b", [ 1, 2, 0, 0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
             ("2[a* b*] \n a b", [ 1, 2, 0, 0], self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
             ("2[a* b*] \n a b", [ 1, 1, 0, 0], self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
+            ("2[a* b*] \n a b", [ 1, 1, 0, 0], self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
+            ("2[a* b*] \n a b", [ 1, 1, 0, 0], self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
 
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [ 1, 4, 0, 0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [ 1, 4, 0, 0], self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [ 1, 3, 0, 0], self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [ 1, 3, 0, 0], self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [ 1, 3, 0, 0], self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
         ]
         for tbn_string, number_of_configs_with_polymer_count, solver, formulation in test_cases:
             with self.subTest(tbn_string=tbn_string, solver=solver, formulation=formulation):
