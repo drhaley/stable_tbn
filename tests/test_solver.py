@@ -188,8 +188,9 @@ class TestSolver(unittest.TestCase):
             ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
             ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
             ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
-            ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
-            ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
+            # recall that POLYMER_UNBOUNDED_MATRIX does not allow spurious binding of polymers without limiting monomers
+            ("a* b* \n a b \n a* \n b*", [ 1, 3, 1, 0], self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
+            ("a* b* \n a b \n a* \n b*", [ 1, 3, 1, 0], self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
 
             ("2[a* b*] \n a b", [ 1, 2, 0, 0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
             ("2[a* b*] \n a b", [ 1, 2, 0, 0], self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
@@ -217,3 +218,5 @@ class TestSolver(unittest.TestCase):
                         )
                     )
                     self.assertEqual(number_of_configs, len(configurations))
+                    for configuration in configurations:
+                        self.assertEqual(polymer_count, configuration.number_of_polymers())

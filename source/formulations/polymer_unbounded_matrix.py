@@ -102,20 +102,25 @@ class Formulation(AbstractFormulation):
         #  to prevent the algorithm for producing "optimal" configurations in which
         #  superfluous singletons are made explicit, which results in many isomorphic solutions
         for j in range(self.max_polymers):
-            number_of_monomers_in_polymer = sum(
+            number_of_limiting_monomers_in_polymer = sum(
                 self.polymer_composition_vars[i, j]
                     for i, monomer in enumerate(self.ordered_monomer_types)
-                    if monomer in self.limiting_monomer_types
+                        if monomer in self.limiting_monomer_types
             )
-            # indicator can only be 1 if polymer contains limiting monomers
+            number_of_monomers_in_polymer = sum(
+                self.polymer_composition_vars[i, j]
+                    for i, _ in enumerate(self.ordered_monomer_types)
+            )
+            # (i) indicator can only be 1 if polymer contains limiting monomers
             self.model.add_constraint(
-                self.indicator_vars[j] <= number_of_monomers_in_polymer
+                self.indicator_vars[j] <= number_of_limiting_monomers_in_polymer
             )
-            # indicator can only be 0 if polymer contains no limiting monomers
+            # (ii) indicator can only be 0 if polymer contains no monomers at all
             self.model.add_equal_to_zero_implication(
                 self.model.complement_var(self.indicator_vars[j]),
                 number_of_monomers_in_polymer
             )
+            # Note that by (i) and (ii) combined, we also enforce that there are no polymers without limiting monomers
 
     def _add_sorting_constraints(self) -> None:
         if self.user_constraints.sort():
