@@ -147,8 +147,6 @@ class TestSolver(unittest.TestCase):
             with self.subTest(tbn_string=tbn_string, solver=solver, formulation=formulation):
                 test_tbn = Tbn.from_string(tbn_string)
                 configurations = list(solver.stable_configs(test_tbn, formulation=formulation, bond_weighting_factor=2.0))
-                if number_of_configs == 2 and len(configurations) == 0:
-                    print("\n\n\nHELLO WORLD\n\n\n")
                 self.assertEqual(number_of_configs, len(configurations))
                 for configuration in configurations:
                     self.assertEqual(number_of_merges, configuration.number_of_merges())
