@@ -188,19 +188,19 @@ class TestSolver(unittest.TestCase):
             ("a* b* \n a b \n a* \n b*", [ 1, 4, 1, 0], self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
             # recall that POLYMER_UNBOUNDED_MATRIX does not allow spurious binding of polymers without limiting monomers
             ("a* b* \n a b \n a* \n b*", [ 1, 3, 1, 0], self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
-            ("a* b* \n a b \n a* \n b*", [ 1, 3, 1, 0], self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
+            # here VARIABLE_BOND_WEIGHT does not require saturation, hence more configurations
+            ("a* b* \n a b \n a* \n b*", [ 1, 3, 3, 1], self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
 
             ("2[a* b*] \n a b", [ 1, 2, 0, 0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
             ("2[a* b*] \n a b", [ 1, 2, 0, 0], self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
             ("2[a* b*] \n a b", [ 1, 1, 0, 0], self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
             ("2[a* b*] \n a b", [ 1, 1, 0, 0], self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
-            ("2[a* b*] \n a b", [ 1, 1, 0, 0], self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
+            ("2[a* b*] \n a b", [ 1, 1, 1, 0], self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
 
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [ 1, 4, 0, 0], self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [ 1, 4, 0, 0], self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [ 1, 3, 0, 0], self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [ 1, 3, 0, 0], self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
-            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", [ 1, 3, 0, 0], self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
         ]
         for tbn_string, number_of_configs_with_polymer_count, solver, formulation in test_cases:
             with self.subTest(tbn_string=tbn_string, solver=solver, formulation=formulation):
