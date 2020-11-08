@@ -71,7 +71,6 @@ class Formulation(UnboundedFormulation):
             for j in range(self.max_polymers)
         )
         scaling_factor = 100
-        print(f"Weight: {self.user_constraints.bond_weight()}")
         self.scaled_energy = (
                 round(scaling_factor * self.user_constraints.bond_weight()) * self.total_bond_deficit
                 + scaling_factor * self.number_of_merges
