@@ -3,3 +3,6 @@ __pycache__
 
 # no IDE files
 .idea
+
+# no temp files
+TEMP_4ti2_CALLOUT_*.*

@@ -87,7 +87,8 @@ class Tbn:
             else:
                 yield monomer
 
-    def limiting_domain_types(self) -> Iterator[Domain]:
+    def limiting_domain_types(self, filter_ties: bool = False) -> Iterator[Domain]:
+        # if filter_ties is True, will not report domain types which match the count of their complement
         domain_tally = {}
         for monomer in self.__monomer_counts:
             count_of_monomer = self.__monomer_counts[monomer]
@@ -97,10 +98,13 @@ class Tbn:
                     raise AssertionError(f"domain {domain} exists in opposing infinite quantities")
 
         for unstarred_domain in sorted(domain_tally.keys()):
-            if domain_tally[unstarred_domain] >= 0:
+            if domain_tally[unstarred_domain] > 0:
                 yield unstarred_domain.complement()
+            elif domain_tally[unstarred_domain] == 0:
+                if not filter_ties:
+                    yield unstarred_domain.complement()  # count of complement is the same; force a choice
             else:
-                yield unstarred_domain  # Note: if tied, also yields starred_domain
+                yield unstarred_domain
 
     def limiting_monomer_types(self) -> Iterator[Monomer]:
         limiting_domain_types = list(self.limiting_domain_types())

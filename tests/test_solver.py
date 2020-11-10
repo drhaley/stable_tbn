@@ -19,6 +19,7 @@ class TestSolver(unittest.TestCase):
             ("a* b* \n a b \n a* \n b*", 3, 1, self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
             ("a* b* \n a b \n a* \n b*", 3, 1, self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
             ("a* b* \n a b \n a* \n b*", 3, 1, self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
+            ("a* b* \n a b \n a* \n b*", 3, 1, self.cp_solver, SolverFormulation.GRAVER_BASIS),
 
             ("a* b* \n a b \n a* \n b*", 3, 1, self.ip_solver, SolverFormulation.BOND_AWARE_NETWORK),
             ("a* b* \n a b \n a* \n b*", 3, 1, self.ip_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
@@ -26,6 +27,7 @@ class TestSolver(unittest.TestCase):
             ("a* b* \n a b \n a* \n b*", 3, 1, self.ip_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
             ("a* b* \n a b \n a* \n b*", 3, 1, self.ip_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
             ("a* b* \n a b \n a* \n b*", 3, 1, self.ip_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
+            ("a* b* \n a b \n a* \n b*", 3, 1, self.ip_solver, SolverFormulation.GRAVER_BASIS),
 
             ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.BOND_AWARE_NETWORK),
             ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
@@ -33,6 +35,7 @@ class TestSolver(unittest.TestCase):
             ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
             ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
             ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
+            ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.GRAVER_BASIS),
 
             ("2[a* b*] \n a b", 2, 1, self.ip_solver, SolverFormulation.BOND_AWARE_NETWORK),
             ("2[a* b*] \n a b", 2, 1, self.ip_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
@@ -40,18 +43,21 @@ class TestSolver(unittest.TestCase):
             ("2[a* b*] \n a b", 2, 1, self.ip_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
             ("2[a* b*] \n a b", 2, 1, self.ip_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
             ("2[a* b*] \n a b", 2, 1, self.ip_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
+            ("2[a* b*] \n a b", 2, 1, self.ip_solver, SolverFormulation.GRAVER_BASIS),
 
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.cp_solver, SolverFormulation.GRAVER_BASIS),
 
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 2, 5, self.ip_solver, SolverFormulation.GRAVER_BASIS),
 
             ("inf[a* b*] \n 2[a b]", infinity, 2, self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
             ("inf[a* b*] \n 2[a b]", infinity, 2, self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
@@ -116,6 +122,7 @@ class TestSolver(unittest.TestCase):
             ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
             ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
             ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
+            ("a* b* \n a b \n a* \n b*", 1, 1, self.cp_solver, SolverFormulation.GRAVER_BASIS),
 
             ("a a \n a* a*", 2, 1, self.cp_solver, SolverFormulation.BOND_AWARE_NETWORK),
             ("a a \n a* a*", 1, 1, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
@@ -123,6 +130,7 @@ class TestSolver(unittest.TestCase):
             ("a a \n a* a*", 1, 1, self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
             ("a a \n a* a*", 1, 1, self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
             ("a a \n a* a*", 1, 1, self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
+            ("a a \n a* a*", 1, 1, self.cp_solver, SolverFormulation.GRAVER_BASIS),
 
             ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.BOND_AWARE_NETWORK),
             ("2[a* b*] \n a b", 2, 1, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
@@ -130,12 +138,14 @@ class TestSolver(unittest.TestCase):
             ("2[a* b*] \n a b", 1, 1, self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
             ("2[a* b*] \n a b", 1, 1, self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
             ("2[a* b*] \n a b", 1, 1, self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
+            ("2[a* b*] \n a b", 1, 1, self.cp_solver, SolverFormulation.GRAVER_BASIS),
 
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 4, 5, self.cp_solver, SolverFormulation.BOND_OBLIVIOUS_NETWORK),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 4, 5, self.cp_solver, SolverFormulation.POLYMER_BINARY_MATRIX),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 3, 5, self.cp_solver, SolverFormulation.POLYMER_INTEGER_MATRIX),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 3, 5, self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
             ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 3, 5, self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),
+            ("6(a*) \n 2[3(a*)] \n a \n 5(a) \n 2(a) \n 4(a)", 3, 5, self.cp_solver, SolverFormulation.GRAVER_BASIS),
 
             ("inf[a* b*] \n 2[a b]", 1, 2, self.cp_solver, SolverFormulation.POLYMER_UNBOUNDED_MATRIX),
             ("inf[a* b*] \n 2[a b]", 1, 2, self.cp_solver, SolverFormulation.VARIABLE_BOND_WEIGHT),

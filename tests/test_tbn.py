@@ -174,6 +174,15 @@ class TestTbn(unittest.TestCase):
             with self.assertRaises(AssertionError):
                 list(conflicting_excess_tbn.limiting_domain_types())
 
+        with self.subTest("test equal count tie-breaking filter"):
+            monomer_multiset = {
+                Monomer.from_string("2(a)"): 1,
+                Monomer.from_string("a*"): 2,
+                Monomer.from_string("b*"): 1
+            }
+            limiting_domain_types = list(Tbn(monomer_multiset).limiting_domain_types(filter_ties=True))
+            self.assertEqual([Domain("b")], limiting_domain_types)
+
     def test_limiting_monomer_types(self):
         test_tbn = Tbn({
             Monomer.from_string("a b c e"): infinity,
