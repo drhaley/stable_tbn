@@ -38,9 +38,10 @@ def main() -> None:
         )
 
         toc = timeit.default_timer()
-        for i, configuration in enumerate(stable_configurations):
-            configuration_string = configuration.full_str() if args.full else str(configuration)
-            print(f"Configuration {i+1}:\n{configuration_string}")
+        if not args.benchmark:
+            for i, configuration in enumerate(stable_configurations):
+                configuration_string = configuration.full_str() if args.full else str(configuration)
+                print(f"Configuration {i+1}:\n{configuration_string}")
     else:
         stable_configuration = lib.get_stable_config(
             tbn_filename=args.tbn_filename,
@@ -52,8 +53,9 @@ def main() -> None:
         )
 
         toc = timeit.default_timer()
-        configuration_string = stable_configuration.full_str() if args.full else str(stable_configuration)
-        print(f"Configuration: {configuration_string}")
+        if not args.benchmark:
+            configuration_string = stable_configuration.full_str() if args.full else str(stable_configuration)
+            print(f"Configuration: {configuration_string}")
 
     if args.timed:
         print(f"seconds elapsed: {toc-tic}")
@@ -115,6 +117,11 @@ def get_command_line_arguments() -> argparse.Namespace:
         "--verbose",
         action="store_true",
         help="display solver output",
+    )
+    parser.add_argument(
+        "--benchmark",
+        action="store_true",
+        help="do not display configurations",
     )
     return parser.parse_args()
 

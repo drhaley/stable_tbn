@@ -22,8 +22,7 @@ class Formulation(AbstractFormulation):
         """
         self._run_asserts()
         monomers_and_slack_as_matrix = self._project_tbn_to_column_matrix(self.tbn)
-        graver_basis = self._get_graver_basis_from_matrix(monomers_and_slack_as_matrix)
-        polymer_basis = self._convert_graver_basis_to_polymer_basis(graver_basis)
+        polymer_basis = self._get_hilbert_basis_from_matrix(monomers_and_slack_as_matrix)
         self._display_polymer_basis(polymer_basis)
         self._populate_model_from_polymer_basis(polymer_basis)
 
@@ -47,10 +46,10 @@ class Formulation(AbstractFormulation):
         return full_matrix
 
     @staticmethod
-    def _get_graver_basis_from_matrix(matrix: np.array, quiet: bool = False) -> np.array:
+    def _get_hilbert_basis_from_matrix(matrix: np.array, quiet: bool = False) -> np.array:
         temporary_filename_prefix = os.path.join(os.getcwd(), f"TEMP_4ti2_CALLOUT_{randint(0,10000)}")
         matrix_filename = temporary_filename_prefix + '.mat'
-        graver_filename = temporary_filename_prefix + '.gra'
+        hilbert_basis_filename = temporary_filename_prefix + '.hil'
 
         # write a temporary matrix file
         with open(matrix_filename, 'w') as outFile:
@@ -59,34 +58,24 @@ class Formulation(AbstractFormulation):
             for row in matrix:
                 for entry in row:
                     outFile.write(f"{entry} ")
-            outFile.write('\n')
+                outFile.write('\n')
 
-        subprocess.call(["graver", temporary_filename_prefix, "-q" if quiet else ""])
-
+        subprocess.call(["hilbert", temporary_filename_prefix, "-q" if quiet else ""])
 
         # read and interpret response
-        with open(graver_filename, 'r') as inFile:
+        with open(hilbert_basis_filename, 'r') as inFile:
             # shape is first line of the file
             shape_as_string = inFile.readline()
             shape = tuple(int(x) for x in shape_as_string.split())
 
-            # 4ti2 only gives half the basis (other half are reflections about the origin)
             flat_array = np.array(inFile.read().split(), np.int64)
-            half_basis = flat_array.reshape(*shape).T
-            basis = np.hstack((half_basis, np.negative(half_basis)))
+            basis = flat_array.reshape(*shape).T
 
         # clean up
         os.remove(matrix_filename)
-        os.remove(graver_filename)
+        os.remove(hilbert_basis_filename)
 
         return basis
-
-    @staticmethod
-    def _convert_graver_basis_to_polymer_basis(graver_basis: np.array) -> np.array:
-        polymer_basis = np.array([
-            vector for vector in graver_basis.T if all(vector >= 0)  # vector must reside in first orthant
-        ], np.int64).T
-        return polymer_basis
 
     def _populate_model_from_polymer_basis(self, basis: np.array) -> Model:
         self.polymer_basis = basis
