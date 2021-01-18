@@ -37,10 +37,6 @@ class Formulation(AbstractFormulation):
         ], np.int64).T
         if filtered_limiting_domain_types:  # is not empty
             slack_matrix = np.array([
-                [1 if filtered_domain == domain else 0 for domain in limiting_domain_types]
-                    for filtered_domain in filtered_limiting_domain_types
-            ], np.int64)
-            slack_matrix = np.array([
                 [1 if filtered_domain == domain else 0 for filtered_domain in filtered_limiting_domain_types]
                     for domain in limiting_domain_types
             ], np.int64)
