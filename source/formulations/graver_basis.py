@@ -40,8 +40,6 @@ class Formulation(AbstractFormulation):
                 [1 if filtered_domain == domain else 0 for filtered_domain in filtered_limiting_domain_types]
                     for domain in limiting_domain_types
             ], np.int64)
-            print(f"monomer matrix:\n{monomer_matrix}")
-            print(f"slack matrix:\n{slack_matrix}")
             full_matrix = np.hstack((monomer_matrix, slack_matrix))
         else:
             full_matrix = monomer_matrix
