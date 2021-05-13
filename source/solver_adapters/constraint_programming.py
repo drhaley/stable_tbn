@@ -42,7 +42,8 @@ class CpModel(abstract.Model, cp_model.CpModel):
             else:
                 constraint = self.add_constraint(consequent)
 
-            constraint = constraint.OnlyEnforceIf([x for x in antecedents if x != 1 and x is not True])
+            constraint = constraint.OnlyEnforceIf([x for x in antecedents
+                    if x is not True and not (type(x) is int and x == 1)])
 
             return constraint
 
