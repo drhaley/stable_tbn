@@ -11,7 +11,7 @@ from source.solver_adapters.abstract import Model
 from source.configuration import Configuration
 from source.polymer import Polymer
 
-# TODO: Graver basis implementation does not respond or assert on some user constraints (merges, energy)
+# TODO: Hilbert basis implementation does not respond or assert on some user constraints (merges, energy)
 # TODO: implement verbosity flags
 
 
@@ -60,7 +60,7 @@ class Formulation(AbstractFormulation):
                     outFile.write(f"{entry} ")
                 outFile.write('\n')
 
-        subprocess.call(["hilbert", temporary_filename_prefix, "-q" if quiet else ""])
+        subprocess.call(["4ti2-hilbert", temporary_filename_prefix, "-q" if quiet else ""])
 
         # read and interpret response
         with open(hilbert_basis_filename, 'r') as inFile:
@@ -151,4 +151,4 @@ class Formulation(AbstractFormulation):
     def _run_asserts(self) -> None:
         for monomer_type in self.tbn.monomer_types():
             if self.tbn.count(monomer_type) == infinity:
-                raise NotImplementedError("Not implemented to use graver basis formulation with infinite monomer counts")
+                raise NotImplementedError("Not implemented to use Hilbert basis formulation with infinite monomer counts")

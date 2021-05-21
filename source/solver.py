@@ -12,7 +12,7 @@ from source.formulations.polymer_binary_matrix import Formulation as PolymerBina
 from source.formulations.polymer_integer_matrix import Formulation as PolymerIntegerMatrixFormulation
 from source.formulations.polymer_unbounded_matrix import Formulation as PolymerUnboundedMatrixFormulation
 from source.formulations.variable_bond_weight import Formulation as VariableBondWeightFormulation
-from source.formulations.graver_basis import Formulation as GraverBasisFormulation
+from source.formulations.hilbert_basis import Formulation as HilbertBasisFormulation
 
 
 class SolverMethod(Enum):
@@ -27,7 +27,7 @@ class SolverFormulation(Enum):
     POLYMER_INTEGER_MATRIX = auto()
     POLYMER_UNBOUNDED_MATRIX = auto()
     VARIABLE_BOND_WEIGHT = auto()
-    GRAVER_BASIS = auto()
+    HILBERT_BASIS = auto()
 
 
 class Solver:
@@ -74,8 +74,8 @@ class Solver:
         elif formulation == SolverFormulation.VARIABLE_BOND_WEIGHT:
             formulation = VariableBondWeightFormulation(tbn, self.__single_solve_adapter, user_constraints)
             return formulation.get_configuration(verbose=verbose)
-        elif formulation == SolverFormulation.GRAVER_BASIS:
-            formulation = GraverBasisFormulation(tbn, self.__single_solve_adapter, user_constraints)
+        elif formulation == SolverFormulation.HILBERT_BASIS:
+            formulation = HilbertBasisFormulation(tbn, self.__single_solve_adapter, user_constraints)
             return formulation.get_configuration(verbose=verbose)
         else:
             raise AssertionError(f"did not recognize formulation requested: {formulation}")
@@ -146,8 +146,8 @@ class Solver:
             )
             return formulation.get_all_configurations(verbose=verbose)
 
-        elif formulation == SolverFormulation.GRAVER_BASIS:
-            formulation = GraverBasisFormulation(
+        elif formulation == SolverFormulation.HILBERT_BASIS:
+            formulation = HilbertBasisFormulation(
                 tbn, self.__multi_solve_adapter, fixed_polymer_user_constraints
             )
             return formulation.get_all_configurations(verbose=verbose)

@@ -3,7 +3,7 @@ import numpy as np
 from math import inf as infinity
 
 from source.tbn import Tbn
-from source.formulations.graver_basis import Formulation
+from source.formulations.hilbert_basis import Formulation
 from source.monomer import Monomer
 from source.domain import Domain
 
