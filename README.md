@@ -1,15 +1,22 @@
 # StableTBN
-A Python tool to generate the stable configurations of a Thermodynamic Binding Network.  Also supports user-specified constraints for more specific investigation of a network.  
+A Python tool to generate the stable configurations of a Thermodynamic Binding Network.  Also supports user-specified constraints for more specific investigation of a network.
 
-
-#### System Requirements
-+ Python 3.6 (or higher)
+## System requirements
++ [Python 3.6](https://www.python.org/downloads/) (or higher)
++ [NumPy](https://numpy.org/install/)
 + [Google OR-tools](https://developers.google.com/optimization/install)
-
-In order to use functions that compute Hilbert bases, the package [4ti2](https://4ti2.github.io/) must also be installed and accessible via the system path.
-
-Note: This software is tested on Linux-based operating systems, but we expect that most functionality will be retained on Windows and macOS-based systems.  Please let us know if you find any compatibility issues!
   
+Additionally, [4ti2](https://4ti2.github.io/) is required to use features that calculate Hilbert bases.
+Note that 4ti2 is a Linux-based application and will not run in Windows natively.
+
+Note: This software is tested on Ubuntu-based operating systems (and on Windows 10 using WSL2), but we expect that most functionality will be retained if using other Linux distributions or if using Windows natively.  Please let us know if you find any compatibility issues!
+
+### Installing requirements
+
+    $ sudo apt install python3 python3-pip    # if Python3 is not already installed
+    $ pip install numpy ortools               # if Python2 is also installed, may need to use "pip3"
+    $ sudo apt install 4ti2                   # this step is optional
+
 # Command line usage
     
     $ python3 stable-tbn.py <tbn_filename>
@@ -30,7 +37,7 @@ Note: This software is tested on Linux-based operating systems, but we expect th
                              POLYMER_INTEGER_MATRIX,
                              POLYMER_UNBOUNDED_MATRIX,
                              VARIABLE_BOND_WEIGHT,
-                             GRAVER_BASIS
+                             HILBERT_BASIS
     -v, --verbose         display solver output
     --benchmark           do not display the stable configuration(s)
 
