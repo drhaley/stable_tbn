@@ -17,6 +17,10 @@ Note: This software is tested on Ubuntu-based operating systems (and on Windows 
     $ pip install numpy ortools               # if Python2 is also installed, may need to use "pip3"
     $ sudo apt install 4ti2                   # this step is optional
 
+Clone or copy the stable_tbn files to a directory of your choice.
+You can test to see if stable_tbn is working by running one of the [examples](#Examples):
+e.g. `python3 stable_tbn.py examples/tbn.txt`
+
 # Command line usage
     
     $ python3 stable-tbn.py <tbn_filename>
