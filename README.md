@@ -218,6 +218,28 @@ Note: StableTBN does not implement site-level bonds explicitly, and so StableGen
     Configuration 9:
     2{G, V0, V1, V2}
 
+#### Hilbert basis example
+
+    $ python3 stable_tbn.py examples/tbn_gg.txt --formulation HILBERT_BASIS
+
+    ...
+
+    Found Polymer basis:
+    -------------------
+    {G, V0, V1, V2}
+    {H0}
+    {H1}
+    {H2}
+    {V0}
+    {V1}
+    {V2}
+    {G, H0, H1, H2}
+    -------------------
+    Configuration 1:
+    {G, V0, V1, V2}
+    Configuration 2:
+    {G, H0, H1, H2}
+
 # Citation
 
 #### Author
