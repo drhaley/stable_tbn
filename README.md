@@ -182,6 +182,13 @@ Note: StableTBN does not implement site-level bonds explicitly, and so StableGen
     Configuration 2:
     {G, V0, V1, V2}
 
+    $ python3 stable_tbn.py examples/tbn_gg.txt --full
+
+    Configuration 1:
+    {G, H0, H1, H2}; {V0}; {V1}; {V2}
+    Configuration 2:
+    {G, V0, V1, V2}; {H0}; {H1}; {H2}
+
 #### Example 3 input
 
     examples/tbn_gg_2g_with_cat_and_excess.txt
@@ -220,7 +227,7 @@ Note: StableTBN does not implement site-level bonds explicitly, and so StableGen
 
 #### Hilbert basis example
 
-    $ python3 stable_tbn.py examples/tbn_gg.txt --formulation HILBERT_BASIS
+    $ python3 stable_tbn.py examples/tbn_gg.txt --full --formulation HILBERT_BASIS
 
     ...
 
@@ -236,9 +243,9 @@ Note: StableTBN does not implement site-level bonds explicitly, and so StableGen
     {G, H0, H1, H2}
     -------------------
     Configuration 1:
-    {G, V0, V1, V2}
+    {G, V0, V1, V2}; {H0}; {H1}; {H2}
     Configuration 2:
-    {G, H0, H1, H2}
+    {G, H0, H1, H2}; {V0}; {V1}; {V2}
 
 # Citation
 
