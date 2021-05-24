@@ -28,7 +28,6 @@ e.g. `python3 stable_tbn.py examples/tbn.txt`
 ## Optional Command line flags 
     
     -h, --help            show help info
-    -i, --ip              use IP for the optimization step (instead of CP)
     -1                    report only one stable configuration
     -t, --timed           print elapsed time
     -f, --full            print full configuration (includes singletons)
@@ -43,6 +42,7 @@ e.g. `python3 stable_tbn.py examples/tbn.txt`
                              VARIABLE_BOND_WEIGHT,
                              HILBERT_BASIS
     -v, --verbose         display solver output
+    --cp                  use CP for the optimization step (instead of IP)
     --benchmark           do not display the stable configuration(s)
 
 

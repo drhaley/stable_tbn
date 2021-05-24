@@ -31,7 +31,7 @@ def main() -> None:
         stable_configurations = lib.get_stable_configs(
             tbn_filename=args.tbn_filename,
             constraints_filename=args.constraints_filename,
-            solver_method=SolverMethod.INTEGER_PROGRAMMING if args.ip else SolverMethod.CONSTRAINT_PROGRAMMING,
+            solver_method=SolverMethod.CONSTRAINT_PROGRAMMING if args.cp else SolverMethod.INTEGER_PROGRAMMING,
             formulation=formulation,
             bond_weighting_factor=bond_weighting_factor,
             verbose=args.verbose,
@@ -46,7 +46,7 @@ def main() -> None:
         stable_configuration = lib.get_stable_config(
             tbn_filename=args.tbn_filename,
             constraints_filename=args.constraints_filename,
-            solver_method=SolverMethod.INTEGER_PROGRAMMING if args.ip else SolverMethod.CONSTRAINT_PROGRAMMING,
+            solver_method=SolverMethod.CONSTRAINT_PROGRAMMING if args.cp else SolverMethod.INTEGER_PROGRAMMING,
             formulation=formulation,
             bond_weighting_factor=bond_weighting_factor,
             verbose=args.verbose,
@@ -73,7 +73,7 @@ def get_command_line_arguments() -> argparse.Namespace:
         '-i',
         "--ip",
         action="store_true",
-        help="use the integer programming formulation (instead of constraint programming)",
+        help="use integer programming for optimization step [deprecated -- this is now the default]",
     )
     parser.add_argument(
         '-1',
@@ -118,6 +118,12 @@ def get_command_line_arguments() -> argparse.Namespace:
         action="store_true",
         help="display solver output",
     )
+    parser.add_argument(
+        "--cp",
+        action="store_true",
+        help="use the constraint programming formulation for optimization (instead of integer programming)",
+    )
+
     parser.add_argument(
         "--benchmark",
         action="store_true",
