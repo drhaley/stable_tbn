@@ -1,11 +1,8 @@
 import unittest
 import numpy as np
-from math import inf as infinity
 
 from source.tbn import Tbn
 from source.formulations.hilbert_basis import Formulation
-from source.monomer import Monomer
-from source.domain import Domain
 
 
 class TestGraverBasis(unittest.TestCase):
@@ -17,21 +14,29 @@ class TestGraverBasis(unittest.TestCase):
             test_tbn = Tbn.from_string("a* b* \n a b \n a* \n b*")
             actual_matrix = Formulation._project_tbn_to_column_matrix(test_tbn)
             expected_matrix = np.array([
-                [ 1, 1],  # a b
-                [-1,-1],  # a* b*
-                [-1, 0],  # a*
-                [ 0,-1],  # b*
-                [ 1, 0],  # a slack
-                [ 0, 1],  # b slack
+                [-1,-1],  # a b
+                [ 1, 1],  # a* b*
+                [ 1, 0],  # a*
+                [ 0, 1],  # b*
             ], np.int64).T
             self.assertTrue(np.array_equal(expected_matrix, actual_matrix))
 
         with self.subTest("no slack version"):
-            test_tbn = Tbn.from_string("a* b* \n a b")  # no slack this time
+            test_tbn = Tbn.from_string("a* b* \n a b")  # no slack this time, should default to stars being limiting
             actual_matrix = Formulation._project_tbn_to_column_matrix(test_tbn)
             expected_matrix = np.array([
-                [-1,-1],  # a b
-                [ 1, 1],  # a* b*
+                [ 1, 1],  # a b
+                [-1,-1],  # a* b*
+            ], np.int64).T
+            self.assertTrue(np.array_equal(expected_matrix, actual_matrix))
+
+        with self.subTest("second no slack version"):
+            test_tbn = Tbn.from_string("a \n a* b* \n a b")
+            actual_matrix = Formulation._project_tbn_to_column_matrix(test_tbn)
+            expected_matrix = np.array([
+                [ 1, 1],  # a b
+                [-1,-1],  # a* b*
+                [ 1, 0],  # a
             ], np.int64).T
             self.assertTrue(np.array_equal(expected_matrix, actual_matrix))
 
@@ -40,9 +45,11 @@ class TestGraverBasis(unittest.TestCase):
             [1, -2, 1],
         ], np.int64)
         expected_hilbert_basis = np.array([
+            [1, 0, 0],
             [2, 1, 0],
             [1, 1, 1],
             [0, 1, 2],
+            [0, 0, 1],
         ], np.int64).T
         hilbert_basis = Formulation._get_hilbert_basis_from_matrix(A, quiet=True)
         self.assertEqual(expected_hilbert_basis.shape, hilbert_basis.shape)  # dimensions should be equal
